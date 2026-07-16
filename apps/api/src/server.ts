@@ -1,14 +1,5 @@
-import Fastify from "fastify";
-
-const app = Fastify({
-  logger: true,
-});
-
-app.get("/health", async () => {
-  return {
-    status: "ok",
-  };
-});
+import app from "./app.js";
+import "dotenv/config";
 
 const start = async () => {
   try {
