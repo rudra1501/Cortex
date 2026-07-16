@@ -1,9 +1,10 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
-import { registerSchema } from "./auth.schema.js";
+import { loginSchema, registerSchema } from "./auth.schema.js";
 import { RegisterUser } from "../application/register-user.js";
 import { PrismaUserRepository } from "../infrastructure/prisma-user-repository.js";
 import { PasswordService } from "../infrastructure/password.service.js";
 import { JwtService } from "../infrastructure/jwt.service.js";
+import { LoginUser } from "../application/login-user.js";
 
 export const authController = {
   async register(request: FastifyRequest, reply: FastifyReply) {
@@ -30,4 +31,29 @@ export const authController = {
       message: "Internal server error",
     })
   },
+
+  async login(request: FastifyRequest, reply: FastifyReply){
+    try {
+      const body = loginSchema.parse(request.body);
+
+      const loginUser = new LoginUser(
+        new PrismaUserRepository(),
+        new PasswordService(),
+        new JwtService(request.server),
+      );
+
+      const result = await loginUser.execute(body);
+      return reply.send(result);
+
+    } catch (error) {
+      if(error instanceof Error){
+        return reply.status(400).send({
+          message: error.message,
+        });
+      }
+    }
+    return reply.status(500).send({
+      message: "Internal server error",
+    })
+  }
 };
