@@ -1,21 +1,13 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { loginSchema, registerSchema } from "./auth.schema.js";
-import { RegisterUser } from "../application/register-user.js";
-import { PrismaUserRepository } from "../infrastructure/prisma-user-repository.js";
-import { PasswordService } from "../infrastructure/password.service.js";
-import { JwtService } from "../infrastructure/jwt.service.js";
-import { LoginUser } from "../application/login-user.js";
+import { createLoginUser, createRegisterUser } from "./auth.factory.js";
 
 export const authController = {
   async register(request: FastifyRequest, reply: FastifyReply) {
     try {
       const body = registerSchema.parse(request.body);
 
-      const registerUser = new RegisterUser(
-        new PrismaUserRepository(),
-        new PasswordService(),
-        new JwtService(request.server),
-      );
+      const registerUser = createRegisterUser(request.server);
 
       const result = await registerUser.execute(body);
 
@@ -36,11 +28,7 @@ export const authController = {
     try {
       const body = loginSchema.parse(request.body);
 
-      const loginUser = new LoginUser(
-        new PrismaUserRepository(),
-        new PasswordService(),
-        new JwtService(request.server),
-      );
+      const loginUser = createLoginUser(request.server);
 
       const result = await loginUser.execute(body);
       return reply.send(result);
