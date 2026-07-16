@@ -1,0 +1,21 @@
+import Fastify from "fastify";
+import jwtPlugin from "./plugins/jwt.js";
+import authRoutes from "./modules/auth/presentation/auth.routes.js";
+
+const app = Fastify({
+  logger: true,
+});
+
+await app.register(jwtPlugin);
+
+await app.register(authRoutes, {
+  prefix: "/auth",
+})
+
+app.get("/health", async () => {
+  return {
+    status: "ok",
+  };
+});
+
+export default app;
