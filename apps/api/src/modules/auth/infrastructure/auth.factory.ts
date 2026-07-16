@@ -5,6 +5,7 @@ import { PrismaUserRepository } from "../infrastructure/prisma-user-repository.j
 import { JwtService } from "../infrastructure/jwt.service.js";
 import { RegisterUser } from "../application/register-user.js";
 import { LoginUser } from "../application/login-user.js";
+import { RefreshToken } from "../application/refresh-token.js";
 
 export function createRegisterUser(app: FastifyInstance) {
   const userRepository = new PrismaUserRepository();
@@ -27,5 +28,11 @@ export function createLoginUser(app: FastifyInstance) {
     userRepository,
     passwordService,
     jwtService,
+  );
+}
+
+export function createRefreshToken(app: FastifyInstance) {
+  return new RefreshToken(
+    new JwtService(app),
   );
 }

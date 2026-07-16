@@ -25,13 +25,17 @@ export class RegisterUser {
 
     const user = await this.userRepository.create(email, passwordHash);
 
-    const accessToken = await this.jwtService.generateAccessToken({
+    const payload = {
       userId: user.id,
       email: user.email,
-    });
+    };
+
+    const accessToken = await this.jwtService.generateAccessToken(payload);
+    const refreshToken = await this.jwtService.generateRefreshToken(payload);
 
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,

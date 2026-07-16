@@ -1,6 +1,10 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
-import { loginSchema, registerSchema } from "./auth.schema.js";
-import { createLoginUser, createRegisterUser } from "./auth.factory.js";
+import { loginSchema, refreshSchema, registerSchema } from "./auth.schema.js";
+import {
+  createLoginUser,
+  createRefreshToken,
+  createRegisterUser,
+} from "../infrastructure/auth.factory.js";
 
 export const authController = {
   async register(request: FastifyRequest, reply: FastifyReply) {
@@ -13,7 +17,7 @@ export const authController = {
 
       return reply.code(201).send(result);
     } catch (error) {
-      if(error instanceof Error){
+      if (error instanceof Error) {
         return reply.status(400).send({
           message: error.message,
         });
@@ -21,10 +25,10 @@ export const authController = {
     }
     return reply.status(500).send({
       message: "Internal server error",
-    })
+    });
   },
 
-  async login(request: FastifyRequest, reply: FastifyReply){
+  async login(request: FastifyRequest, reply: FastifyReply) {
     try {
       const body = loginSchema.parse(request.body);
 
@@ -32,9 +36,8 @@ export const authController = {
 
       const result = await loginUser.execute(body);
       return reply.send(result);
-
     } catch (error) {
-      if(error instanceof Error){
+      if (error instanceof Error) {
         return reply.status(400).send({
           message: error.message,
         });
@@ -42,6 +45,28 @@ export const authController = {
     }
     return reply.status(500).send({
       message: "Internal server error",
-    })
-  }
+    });
+  },
+
+  async refresh(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const body = refreshSchema.parse(request.body);
+
+      const refreshToken = createRefreshToken(request.server);
+
+      const result = await refreshToken.execute(body);
+
+      return reply.send(result);
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(401).send({
+          message: error.message,
+        });
+      }
+
+      return reply.status(500).send({
+        message: "Internal Server Error",
+      });
+    }
+  },
 };

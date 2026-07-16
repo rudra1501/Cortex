@@ -30,13 +30,18 @@ export class LoginUser {
       throw new Error("Invalid email or password");
     }
 
-    const accessToken = await this.jwtService.generateAccessToken({
+    const payload = {
       userId: user.id,
       email: user.email,
-    });
+    };
+
+    const accessToken = await this.jwtService.generateAccessToken(payload);
+
+    const refreshToken = await this.jwtService.generateRefreshToken(payload);
 
     return {
       accessToken,
+      refreshToken,
       user: {
         id: user.id,
         email: user.email,
