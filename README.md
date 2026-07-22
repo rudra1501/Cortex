@@ -8,13 +8,16 @@ The project is being developed incrementally through milestones, with each miles
 
 ## Tech Stack
 
-* **Frontend:** Next.js (App Router) + TypeScript + Tailwind CSS
-* **API:** Fastify
-* **Worker:** Fastify
-* **Database:** PostgreSQL + pgvector
-* **Queue:** Redis (BullMQ in later milestones)
-* **Package Manager:** pnpm
-* **Containerization:** Docker & Docker Compose
+- **Frontend:** Next.js (App Router) + TypeScript + Tailwind CSS
+- **API:** Fastify
+- **Worker:** Fastify
+- **Database:** PostgreSQL + pgvector
+- **ORM:** Prisma
+- **Authentication:** JWT + bcrypt
+- **Validation:** Zod
+- **Queue:** Redis (BullMQ in later milestones)
+- **Package Manager:** pnpm
+- **Containerization:** Docker & Docker Compose
 
 ---
 
@@ -22,10 +25,10 @@ The project is being developed incrementally through milestones, with each miles
 
 Before running the project, install:
 
-* Node.js 22 LTS
-* pnpm
-* Docker Desktop (or Docker Engine + Docker Compose)
-* Git
+- Node.js 22 LTS
+- pnpm
+- Docker Desktop (or Docker Engine + Docker Compose)
+- Git
 
 Verify your installation:
 
@@ -56,7 +59,18 @@ pnpm install
 
 ---
 
-## Start Infrastructure
+## Environment Variables
+
+Create an `.env` file inside `apps/api`:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/cortex"
+JWT_SECRET="your-secret-key"
+```
+
+---
+
+## Database Setup
 
 Start PostgreSQL and Redis:
 
@@ -64,10 +78,16 @@ Start PostgreSQL and Redis:
 docker compose -f docker/docker-compose.yml up -d
 ```
 
-Verify containers:
+Run database migrations:
 
 ```bash
-docker ps
+pnpm --filter api prisma migrate dev
+```
+
+Generate Prisma Client:
+
+```bash
+pnpm --filter api prisma generate
 ```
 
 ---
@@ -94,10 +114,16 @@ http://localhost:3000
 pnpm --filter api dev
 ```
 
+Runs on:
+
+```
+http://localhost:3001
+```
+
 Health endpoint:
 
 ```
-http://localhost:3001/health
+GET /health
 ```
 
 ---
@@ -108,17 +134,23 @@ http://localhost:3001/health
 pnpm --filter worker dev
 ```
 
+Runs on:
+
+```
+http://localhost:3002
+```
+
 Health endpoint:
 
 ```
-http://localhost:3002/health
+GET /health
 ```
 
 ---
 
 ## Project Structure
 
-```
+```text
 Cortex
 ├── apps
 │   ├── web
@@ -131,21 +163,90 @@ Cortex
 
 ---
 
+## Current Features
+
+### Authentication
+
+- User Registration
+- User Login
+- JWT Access Token Authentication
+- Refresh Token Flow
+- Protected Routes
+
+### Document Metadata
+
+- Create Document
+- List Documents
+- Get Document by ID
+- Update Document
+- Delete Document
+- User-owned document isolation
+
+---
+
+## Architecture
+
+The API follows a modular, layered architecture:
+
+```text
+modules/
+└── auth/
+    ├── application/
+    ├── infrastructure/
+    └── presentation/
+
+└── documents/
+    ├── application/
+    ├── infrastructure/
+    └── presentation/
+```
+
+Each module is divided into:
+
+- **Presentation** – Routes, controllers and request validation.
+- **Application** – Business logic (use cases).
+- **Infrastructure** – Database repositories and external services.
+
+---
+
 ## Current Milestone
 
 ### ✅ M0 — Project Scaffold
 
 Completed:
 
-* pnpm workspace
-* Next.js web application
-* Fastify API
-* Fastify Worker
-* Docker Compose
-* PostgreSQL + pgvector
-* Redis
-* Development environment setup
+- pnpm Workspace
+- Next.js Application
+- Fastify API
+- Fastify Worker
+- Docker Compose
+- PostgreSQL + pgvector
+- Redis
+- Development Environment Setup
 
-Next milestone:
+### ✅ M1 — Authentication & Document Metadata
 
-**M1 — Authentication and Document Metadata**
+Completed:
+
+- JWT Authentication
+- Refresh Token Flow
+- Password Hashing with bcrypt
+- Request Validation with Zod
+- Protected API Routes
+- User Registration & Login
+- Document Metadata CRUD
+- User Authorization & Ownership Checks
+
+---
+
+## Next Milestone
+
+### 🚧 M2 — Document Ingestion
+
+Planned:
+
+- File Uploads
+- Document Storage
+- Background Processing
+- Queue Integration (BullMQ)
+- Processing Status Updates
