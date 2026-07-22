@@ -17,4 +17,35 @@ export class PrismaDocumentRepository {
       },
     });
   }
+
+  async findById(id: string) {
+    return prisma.document.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: {
+      title?: string;
+      description?: string;
+    },
+  ) {
+    return prisma.document.update({
+      where: {
+        id,
+      },
+      data,
+    });
+  }
+
+  async delete(id: string) {
+    return prisma.document.delete({
+      where: {
+        id,
+      },
+    });
+  }
 }

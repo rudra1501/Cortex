@@ -12,12 +12,36 @@ const documentRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get(
-  "/",
-  {
-    preHandler: [app.authenticate],
-  },
-  documentController.list,
-);
+    "/",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.list,
+  );
+
+  app.get(
+    "/:id",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.get,
+  );
+
+  app.patch(
+    "/:id",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.update,
+  );
+
+  app.delete(
+    "/:id",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.delete,
+  );
 };
 
 export default documentRoutes;
