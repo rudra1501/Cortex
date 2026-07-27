@@ -12,7 +12,11 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "fastify": "^5.10.0"
+    "@google/genai": "^2.13.0",
+    "bullmq": "^5.81.2",
+    "fastify": "^5.10.0",
+    "markdown-it": "^14.3.0",
+    "pdf-parse": "^2.4.5"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
