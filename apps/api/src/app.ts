@@ -3,6 +3,7 @@ import jwtPlugin from "./plugins/jwt.js";
 import authRoutes from "./modules/auth/presentation/auth.routes.js";
 import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
+import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 
 const app = Fastify({
   logger: true,
@@ -17,6 +18,18 @@ await app.register(authRoutes, {
 
 await app.register(documentRoutes, {
   prefix: "/documents",
+});
+
+app.get("/test-queue", async (_request, reply) => {
+
+  const queueService = new DocumentQueueService();
+
+  await queueService.enqueue("test-123");
+
+  return reply.send({
+    success: true,
+    message: "Job queued",
+  });
 });
 
 app.get(
