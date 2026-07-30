@@ -1,4 +1,7 @@
 import Fastify from "fastify";
+import "dotenv/config";
+import "./workers/document.worker.js";
+
 
 const app = Fastify({
   logger: true,
