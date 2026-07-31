@@ -4,6 +4,7 @@ import authRoutes from "./modules/auth/presentation/auth.routes.js";
 import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
+import multipart from "@fastify/multipart";
 
 const app = Fastify({
   logger: true,
@@ -12,6 +13,12 @@ const app = Fastify({
 await app.register(jwtPlugin);
 await app.register(authenticatePlugin);
 
+await app.register(multipart, {
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20 MB
+    files: 1,
+  },
+});
 await app.register(authRoutes, {
   prefix: "/auth",
 })

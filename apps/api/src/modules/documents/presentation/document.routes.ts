@@ -8,7 +8,7 @@ const documentRoutes: FastifyPluginAsync = async (app) => {
     {
       preHandler: [app.authenticate],
     },
-    documentController.create,
+    documentController.upload,
   );
 
   app.get(

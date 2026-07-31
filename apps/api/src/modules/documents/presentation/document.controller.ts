@@ -1,41 +1,71 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import {
-  createDocumentSchema,
+  uploadDocumentSchema,
   updateDocumentSchema,
 } from "./document.schema.js";
 import {
   createDeleteDocumentUseCase,
-  createDocumentUseCase,
+  createUploadDocumentUseCase,
   createGetDocumentUseCase,
   createListDocumentsUseCase,
   createUpdateDocumentUseCase,
 } from "../infrastructure/document.factory.js";
+import type { Multipart } from "@fastify/multipart";
+
+function getFieldValue(field?: Multipart | Multipart[]) {
+  if (!field || Array.isArray(field)) {
+    return undefined;
+  }
+
+  if (field.type === "field") {
+    return field.value?.toString();
+  }
+
+  return undefined;
+}
 
 export const documentController = {
-  async create(request: FastifyRequest, reply: FastifyReply) {
+  async upload(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const body = createDocumentSchema.parse(request.body);
+      const file = await request.file();
 
-      const createDocument = createDocumentUseCase();
+      if (!file) {
+        return reply.status(400).send({
+          message: "File is required",
+        });
+      }
 
-      const input = {
+      if (
+        !["application/pdf", "text/markdown", "text/plain"].includes(
+          file.mimetype,
+        )
+      ) {
+        return reply.status(415).send({
+          message: "Unsupported file type",
+        });
+      }
+      const body = uploadDocumentSchema.parse({
+        title: getFieldValue(file.fields.title),
+        description: getFieldValue(file.fields.description),
+      });
+
+      const buffer = await file.toBuffer();
+
+      const result = await createUploadDocumentUseCase().execute({
         title: body.title,
-        userId: request.user.userId,
         ...(body.description !== undefined && {
           description: body.description,
         }),
-      };
-
-      const document = await createDocument.execute(input);
-
-      return reply.status(201).send({
-        id: document.id,
-        title: document.title,
-        description: document.description,
-        status: document.status,
-        createdAt: document.createdAt,
+        userId: request.user.userId,
+        file: {
+          filename: file.filename,
+          mimetype: file.mimetype,
+          buffer,
+        },
       });
+
+      return reply.status(201).send(result);
     } catch (error) {
       if (error instanceof Error) {
         return reply.status(400).send({

@@ -1,13 +1,19 @@
-import { CreateDocument } from "../application/create-document.js";
+import { UploadDocument } from "../application/upload-document.js";
 import { ListDocuments } from "../application/list-document.js";
-import { PrismaDocumentRepository } from "./prisma-document.repository.js";
 import { GetDocument } from "../application/get-document.js";
 import { UpdateDocument } from "../application/update-document.js";
 import { DeleteDocument } from "../application/delete-document.js";
 
-export function createDocumentUseCase() {
-  return new CreateDocument(
+import { PrismaDocumentRepository } from "./prisma-document.repository.js";
+import { FileStorage } from "./file-storage.js";
+import { DocumentQueueService } from "./document-queue.service.js";
+
+
+export function createUploadDocumentUseCase() {
+  return new UploadDocument(
+    new FileStorage(),
     new PrismaDocumentRepository(),
+    new DocumentQueueService(),
   );
 }
 

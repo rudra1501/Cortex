@@ -18,6 +18,12 @@ export const updateDocumentSchema = z
     },
   );
 
+  export const uploadDocumentSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+});
+
   
 export type UpdateDocumentBody = z.infer<typeof updateDocumentSchema>;
 export type CreateDocumentBody = z.infer<typeof createDocumentSchema>;
+export type UploadDocumentBody = z.infer<typeof uploadDocumentSchema>;
