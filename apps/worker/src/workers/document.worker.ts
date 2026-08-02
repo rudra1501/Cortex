@@ -10,10 +10,6 @@ const processor = new DocumentProcessor(repository);
 export const documentWorker = new Worker(
   "document-ingestion",
   async (job) => {
-    console.log("Received job:");
-    console.log(job.name);
-    console.log(job.data);
-
     await processor.process(job.data.documentId);
   },
   {
