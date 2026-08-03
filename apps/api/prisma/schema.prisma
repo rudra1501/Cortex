@@ -34,6 +34,7 @@ model Document {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   storagePath         String?
+  mimeType            String
   rawText             String?
   processingStartedAt DateTime?
   processedAt         DateTime?
