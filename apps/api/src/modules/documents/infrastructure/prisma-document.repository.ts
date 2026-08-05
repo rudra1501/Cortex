@@ -6,6 +6,7 @@ export class PrismaDocumentRepository {
   description?: string;
   userId: string;
   storagePath?: string;
+  mimeType: string;
 }) {
   return prisma.document.create({
     data: {
@@ -16,6 +17,7 @@ export class PrismaDocumentRepository {
       ...(input.storagePath !== undefined && {
         storagePath: input.storagePath,
       }),
+      mimeType: input.mimeType,
       userId: input.userId,
     },
   });

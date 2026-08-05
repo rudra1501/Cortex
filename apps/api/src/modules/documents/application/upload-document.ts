@@ -30,6 +30,7 @@ export class UploadDocument {
       }),
       userId: input.userId,
       storagePath,
+      mimeType: input.file.mimetype,
     });
 
     await this.queueService.enqueue(document.id);

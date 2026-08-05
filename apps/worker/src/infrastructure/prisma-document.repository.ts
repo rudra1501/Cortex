@@ -16,7 +16,7 @@ export class PrismaDocumentRepository {
       rawText?: string;
       processingStartedAt?: Date;
       processedAt?: Date;
-      errorMessage?: string;
+      errorMessage?: string | null;
     },
   ) {
     return prisma.document.update({
