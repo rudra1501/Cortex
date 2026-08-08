@@ -33,18 +33,6 @@ export class DocumentProcessor {
 
       const chunks = chunker.chunk(rawText);
 
-      console.log("Chunking completed");
-      console.log("Total chunks:", chunks.length);
-      const firstChunk = chunks[0];
-      const secondChunk = chunks[1];
-
-      if (firstChunk && secondChunk) {
-        const end = firstChunk.content.slice(-200);
-        const start = secondChunk.content.slice(0, 200);
-
-        console.log("Overlap matches:", end === start);
-      }
-
       await this.chunkRepository.createMany(document.id, chunks);
 
       console.log("Chunks saved successfully");
