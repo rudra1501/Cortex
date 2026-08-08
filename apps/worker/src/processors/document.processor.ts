@@ -4,10 +4,12 @@ import { PrismaDocumentRepository } from "../infrastructure/prisma-document.repo
 import { getParser } from "../parsers/parser.factory.js";
 import { FixedSizeChunker } from "../chunking/fixed-size.chunker.js";
 import { PrismaChunkRepository } from "../infrastructure/prisma-chunk.repository.js";
+import { EmbeddingService } from "../embeddings/embedding.service.js";
 
 export class DocumentProcessor {
   private readonly repository = new PrismaDocumentRepository();
   private readonly chunkRepository = new PrismaChunkRepository();
+  private readonly embeddingService = new EmbeddingService();
 
   async process(documentId: string) {
     const document = await this.repository.findById(documentId);
@@ -33,9 +35,32 @@ export class DocumentProcessor {
 
       const chunks = chunker.chunk(rawText);
 
-      await this.chunkRepository.createMany(document.id, chunks);
+      const savedChunks = await this.chunkRepository.createMany(
+        document.id,
+        chunks,
+      );
 
       console.log("Chunks saved successfully");
+
+      console.log("Generating embeddings...");
+
+      for (const chunk of savedChunks) {
+        console.log(`Generating embedding for chunk ${chunk.chunkIndex}...`);
+
+        const embedding = await this.embeddingService.generateEmbedding(
+          chunk.content,
+        );
+
+        console.log(
+          `Embedding generated for chunk ${chunk.chunkIndex}. Dimensions: ${embedding.length}`,
+        );
+
+        await this.chunkRepository.updateEmbedding(chunk.id, embedding);
+
+        console.log(`Embedding saved for chunk ${chunk.chunkIndex}`);
+      }
+
+      console.log("All embeddings generated and saved");
 
       await this.repository.update(document.id, {
         rawText,

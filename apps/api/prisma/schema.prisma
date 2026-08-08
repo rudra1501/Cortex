@@ -55,6 +55,8 @@ model Chunk {
   chunkIndex       Int
   content          String
 
+  embedding        Unsupported("vector(3072)")?
+
   tokenCount       Int
 
   chunkingStrategy String
