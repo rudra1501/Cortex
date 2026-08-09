@@ -40,27 +40,13 @@ export class DocumentProcessor {
         chunks,
       );
 
-      console.log("Chunks saved successfully");
-
-      console.log("Generating embeddings...");
-
       for (const chunk of savedChunks) {
-        console.log(`Generating embedding for chunk ${chunk.chunkIndex}...`);
-
         const embedding = await this.embeddingService.generateEmbedding(
           chunk.content,
         );
 
-        console.log(
-          `Embedding generated for chunk ${chunk.chunkIndex}. Dimensions: ${embedding.length}`,
-        );
-
         await this.chunkRepository.updateEmbedding(chunk.id, embedding);
-
-        console.log(`Embedding saved for chunk ${chunk.chunkIndex}`);
       }
-
-      console.log("All embeddings generated and saved");
 
       await this.repository.update(document.id, {
         rawText,
