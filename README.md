@@ -410,15 +410,6 @@ Completed:
 - Uploaded file cleanup
 - Document status endpoint
 
----
-
-## Documentation
-
-Detailed ingestion architecture and lifecycle documentation:
-
-```text
-docs/ingestion.md
-```
 
 ---
 
