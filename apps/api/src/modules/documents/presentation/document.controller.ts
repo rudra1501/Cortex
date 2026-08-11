@@ -10,6 +10,7 @@ import {
   createGetDocumentUseCase,
   createListDocumentsUseCase,
   createUpdateDocumentUseCase,
+  createGetDocumentStatusUseCase,
 } from "../infrastructure/document.factory.js";
 import type { Multipart } from "@fastify/multipart";
 
@@ -192,4 +193,30 @@ export const documentController = {
       });
     }
   },
+
+  async status(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { id } = request.params as { id: string };
+
+    const getDocumentStatus =
+      createGetDocumentStatusUseCase();
+
+    const result = await getDocumentStatus.execute({
+      id,
+      userId: request.user.userId,
+    });
+
+    return reply.send(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return reply.status(404).send({
+        message: error.message,
+      });
+    }
+
+    return reply.status(500).send({
+      message: "Internal Server Error",
+    });
+  }
+},
 };

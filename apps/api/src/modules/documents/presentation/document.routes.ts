@@ -20,6 +20,14 @@ const documentRoutes: FastifyPluginAsync = async (app) => {
   );
 
   app.get(
+    "/:id/status",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.status,
+  );
+
+  app.get(
     "/:id",
     {
       preHandler: [app.authenticate],
