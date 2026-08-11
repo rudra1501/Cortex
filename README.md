@@ -2,7 +2,7 @@
 
 Cortex is a Retrieval Engineering project focused on building a production-quality document retrieval pipeline rather than just a chatbot. The project emphasizes understanding and improving every stage of retrieval, including document ingestion, chunking, embeddings, vector search, hybrid retrieval, context engineering, and evaluation.
 
-The project is being developed incrementally through milestones, with each milestones introducing new capabilities while maintaining a clean and scalable architecture.
+The project is being developed incrementally through milestones, with each milestone introducing new capabilities while maintaining a clean and scalable architecture.
 
 ---
 
@@ -15,7 +15,8 @@ The project is being developed incrementally through milestones, with each miles
 - **ORM:** Prisma
 - **Authentication:** JWT + bcrypt
 - **Validation:** Zod
-- **Queue:** Redis (BullMQ in later milestones)
+- **Queue:** Redis + BullMQ
+- **Embeddings:** Google Gemini
 - **Package Manager:** pnpm
 - **Containerization:** Docker & Docker Compose
 
@@ -61,12 +62,30 @@ pnpm install
 
 ## Environment Variables
 
+### API
+
 Create an `.env` file inside `apps/api`:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/cortex"
 JWT_SECRET="your-secret-key"
+REDIS_HOST="localhost"
+REDIS_PORT="6379"
+UPLOAD_DIR="uploads"
 ```
+
+### Worker
+
+Create an `.env` file inside `apps/worker`:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/cortex"
+REDIS_HOST="localhost"
+REDIS_PORT="6379"
+GEMINI_API_KEY="your-gemini-api-key"
+```
+
+> Never commit `.env` files or API keys to the repository.
 
 ---
 
@@ -90,6 +109,8 @@ Generate Prisma Client:
 pnpm --filter api prisma generate
 ```
 
+The PostgreSQL database uses **pgvector** for storing document chunk embeddings.
+
 ---
 
 ## Run Applications
@@ -102,7 +123,7 @@ pnpm --filter web dev
 
 Runs on:
 
-```
+```text
 http://localhost:3000
 ```
 
@@ -116,13 +137,13 @@ pnpm --filter api dev
 
 Runs on:
 
-```
+```text
 http://localhost:3001
 ```
 
 Health endpoint:
 
-```
+```http
 GET /health
 ```
 
@@ -136,15 +157,17 @@ pnpm --filter worker dev
 
 Runs on:
 
-```
+```text
 http://localhost:3002
 ```
 
 Health endpoint:
 
-```
+```http
 GET /health
 ```
+
+The Worker processes document ingestion jobs asynchronously through BullMQ and Redis.
 
 ---
 
@@ -172,15 +195,103 @@ Cortex
 - JWT Access Token Authentication
 - Refresh Token Flow
 - Protected Routes
+- Password Hashing with bcrypt
 
-### Document Metadata
+### Document Management
 
-- Create Document
-- List Documents
-- Get Document by ID
-- Update Document
-- Delete Document
+- Create documents through file upload
+- List user documents
+- Get document by ID
+- Update document metadata
+- Delete documents
 - User-owned document isolation
+- Uploaded file cleanup
+
+### Document Ingestion
+
+- PDF uploads
+- Markdown uploads
+- Local file storage
+- Asynchronous ingestion using BullMQ
+- Redis-backed job queue
+- Dedicated Worker processing
+- PDF text extraction
+- Markdown text extraction
+- Raw text storage
+- Fixed-size chunking
+- Configurable chunk overlap
+- Chunk metadata storage
+- Google Gemini embeddings
+- 3072-dimensional embeddings
+- pgvector storage
+- Ingestion status tracking
+- Processing failure handling
+
+### Ingestion Status
+
+Documents move through the following lifecycle:
+
+```text
+PENDING
+   │
+   ▼
+PROCESSING
+   │
+   ├──────────────► READY
+   │
+   └──────────────► FAILED
+```
+
+---
+
+## Document Ingestion Flow
+
+```text
+Upload Document
+       │
+       ▼
+Store Uploaded File
+       │
+       ▼
+Create Document
+       │
+       ▼
+Queue Ingestion Job
+       │
+       ▼
+Redis / BullMQ
+       │
+       ▼
+Worker
+       │
+       ▼
+Parse Document
+       │
+       ▼
+Extract Raw Text
+       │
+       ▼
+Store rawText
+       │
+       ▼
+Fixed-size Chunking
+       │
+       ▼
+Store Chunks
+       │
+       ▼
+Generate Embeddings
+       │
+       ▼
+Store Vectors in pgvector
+       │
+       ▼
+Status → READY
+```
+
+The API is responsible for accepting uploads, storing metadata and files, and creating ingestion jobs.
+
+The Worker is responsible for the complete asynchronous ingestion pipeline.
 
 ---
 
@@ -190,11 +301,11 @@ The API follows a modular, layered architecture:
 
 ```text
 modules/
-└── auth/
-    ├── application/
-    ├── infrastructure/
-    └── presentation/
-
+├── auth/
+│   ├── application/
+│   ├── infrastructure/
+│   └── presentation/
+│
 └── documents/
     ├── application/
     ├── infrastructure/
@@ -204,8 +315,41 @@ modules/
 Each module is divided into:
 
 - **Presentation** – Routes, controllers and request validation.
-- **Application** – Business logic (use cases).
-- **Infrastructure** – Database repositories and external services.
+- **Application** – Business logic and use cases.
+- **Infrastructure** – Database repositories, file storage, queues and external services.
+
+The Worker separates document processing from the API:
+
+```text
+                    ┌─────────────┐
+                    │     API     │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   BullMQ    │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │    Redis    │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   Worker    │
+                    └──────┬──────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+           Parsing      Chunking    Embeddings
+              │            │            │
+              └────────────┴────────────┘
+                           │
+                           ▼
+                    PostgreSQL
+                     + pgvector
+```
 
 ---
 
@@ -224,6 +368,8 @@ Completed:
 - Redis
 - Development Environment Setup
 
+---
+
 ### ✅ M1 — Authentication & Document Metadata
 
 Completed:
@@ -239,14 +385,110 @@ Completed:
 
 ---
 
+### ✅ M2 — Document Ingestion Pipeline
+
+Completed:
+
+- PDF and Markdown uploads
+- Multipart file handling
+- Local file storage
+- Document metadata persistence
+- BullMQ ingestion queue
+- Redis-backed asynchronous processing
+- Dedicated Worker
+- PDF parsing
+- Markdown parsing
+- Raw text extraction
+- Document status lifecycle
+- Fixed-size chunking
+- Configurable chunk overlap
+- Chunk persistence
+- Google Gemini embedding generation
+- 3072-dimensional embeddings
+- pgvector embedding storage
+- Ingestion failure handling
+- Uploaded file cleanup
+- Document status endpoint
+
+---
+
+## Documentation
+
+Detailed ingestion architecture and lifecycle documentation:
+
+```text
+docs/ingestion.md
+```
+
+---
+
+## Roadmap
+
+```text
+M0 — Project Scaffold
+        │
+        ▼
+M1 — Authentication & Document Metadata
+        │
+        ▼
+M2 — Document Ingestion Pipeline
+        │
+        ▼
+M3 — Retrieval Pipeline
+        │
+        ▼
+M4 — Hybrid Retrieval & Context Engineering
+        │
+        ▼
+M5 — Evaluation & Retrieval Quality
+```
+
+---
+
 ## Next Milestone
 
-### 🚧 M2 — Document Ingestion
+### 🚧 M3 — Retrieval Pipeline
 
 Planned:
 
-- File Uploads
-- Document Storage
-- Background Processing
-- Queue Integration (BullMQ)
-- Processing Status Updates
+- Query Embeddings
+- Vector Search
+- Retrieval Module
+- Context Builder
+- Prompt Builder
+- Streaming Chat
+- Source Citations
+
+Vector search and retrieval are intentionally not implemented in M2. M2 focuses on preparing searchable document data for future retrieval.
+
+---
+
+## Development Philosophy
+
+Cortex is intentionally developed milestone by milestone.
+
+Each milestone focuses on understanding and implementing one part of the retrieval system rather than hiding complexity behind high-level abstractions.
+
+The goal is to understand the complete pipeline:
+
+```text
+Documents
+    ↓
+Ingestion
+    ↓
+Parsing
+    ↓
+Chunking
+    ↓
+Embeddings
+    ↓
+Vector Storage
+    ↓
+Retrieval
+    ↓
+Context Engineering
+    ↓
+Generation
+    ↓
+Evaluation
+```
