@@ -7,6 +7,7 @@ import { DeleteDocument } from "../application/delete-document.js";
 import { PrismaDocumentRepository } from "./prisma-document.repository.js";
 import { FileStorage } from "./file-storage.js";
 import { DocumentQueueService } from "./document-queue.service.js";
+import { GetDocumentStatus } from "../application/get-document-status.js";
 
 
 export function createUploadDocumentUseCase() {
@@ -37,6 +38,12 @@ export function createUpdateDocumentUseCase() {
 
 export function createDeleteDocumentUseCase() {
   return new DeleteDocument(
+    new PrismaDocumentRepository(),
+  );
+}
+
+export function createGetDocumentStatusUseCase() {
+  return new GetDocumentStatus(
     new PrismaDocumentRepository(),
   );
 }
