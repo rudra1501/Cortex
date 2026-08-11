@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
@@ -21,5 +21,17 @@ export class FileStorage {
     await writeFile(storagePath, file.buffer);
 
     return storagePath;
+  }
+
+    async delete(storagePath: string) {
+    try {
+      await unlink(storagePath);
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+
+      if (code !== "ENOENT") {
+        throw error;
+      }
+    }
   }
 }

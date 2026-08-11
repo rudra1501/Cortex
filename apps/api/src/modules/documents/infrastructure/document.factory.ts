@@ -39,6 +39,7 @@ export function createUpdateDocumentUseCase() {
 export function createDeleteDocumentUseCase() {
   return new DeleteDocument(
     new PrismaDocumentRepository(),
+    new FileStorage(),
   );
 }
 
