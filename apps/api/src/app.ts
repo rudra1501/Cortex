@@ -5,6 +5,7 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
+// import { createEmbedQueryUseCase } from "./modules/retrieval/infrastructure/retrieval.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -26,6 +27,16 @@ await app.register(authRoutes, {
 await app.register(documentRoutes, {
   prefix: "/documents",
 });
+
+// const embedQuery = createEmbedQueryUseCase();
+
+// const embedding =
+//   await embedQuery.execute(
+//     "What documents do I have about backend development?",
+//   );
+
+// console.log("Query embedding generated");
+// console.log("Dimensions:", embedding.length);
 
 app.get("/test-queue", async (_request, reply) => {
 
