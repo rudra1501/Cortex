@@ -20,7 +20,7 @@ await app.register(authenticatePlugin);
 
 await app.register(multipart, {
   limits: {
-    fileSize: 20 * 1024 * 1024, // 20 MB
+    fileSize: 20 * 1024 * 1024,
     files: 1,
   },
 });
@@ -32,15 +32,6 @@ await app.register(documentRoutes, {
   prefix: "/documents",
 });
 
-// const embedQuery = createEmbedQueryUseCase();
-
-// const embedding =
-//   await embedQuery.execute(
-//     "What documents do I have about backend development?",
-//   );
-
-// console.log("Query embedding generated");
-// console.log("Dimensions:", embedding.length);
 const embedQuery = createEmbedQueryUseCase();
 
 const vectorSearch = createVectorSearchUseCase();
