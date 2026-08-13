@@ -5,7 +5,11 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
-import { createEmbedQueryUseCase, createVectorSearchUseCase } from "./modules/retrieval/infrastructure/retrieval.factory.js";
+import {
+  createContextBuilderUseCase,
+  createEmbedQueryUseCase,
+  createVectorSearchUseCase,
+} from "./modules/retrieval/infrastructure/retrieval.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -22,7 +26,7 @@ await app.register(multipart, {
 });
 await app.register(authRoutes, {
   prefix: "/auth",
-})
+});
 
 await app.register(documentRoutes, {
   prefix: "/documents",
@@ -37,27 +41,27 @@ await app.register(documentRoutes, {
 
 // console.log("Query embedding generated");
 // console.log("Dimensions:", embedding.length);
-const embedQuery =
-  createEmbedQueryUseCase();
+const embedQuery = createEmbedQueryUseCase();
 
-const vectorSearch =
-  createVectorSearchUseCase();
+const vectorSearch = createVectorSearchUseCase();
 
-const embedding =
-  await embedQuery.execute(
-    "backend development",
-  );
+const contextBuilder = createContextBuilderUseCase();
 
-const results =
-  await vectorSearch.execute({
-    queryEmbedding: embedding,
-    userId: "cmsq3db0r0000j0ecmzc5lxsv",
-  });
+const embedding = await embedQuery.execute("backend development");
 
-console.log(results);
+const results = await vectorSearch.execute({
+  queryEmbedding: embedding,
+  userId: "cmsg5bo980000uiqg7m2p5o2y",
+});
+const builtContext = contextBuilder.execute(results);
+
+console.log("Sources:");
+console.log(builtContext.sources);
+
+console.log("Context:");
+console.log(builtContext.context);
 
 app.get("/test-queue", async (_request, reply) => {
-
   const queueService = new DocumentQueueService();
 
   await queueService.enqueue("test-123");
