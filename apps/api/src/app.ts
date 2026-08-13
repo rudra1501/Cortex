@@ -5,7 +5,7 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
-// import { createEmbedQueryUseCase } from "./modules/retrieval/infrastructure/retrieval.factory.js";
+import { createEmbedQueryUseCase, createVectorSearchUseCase } from "./modules/retrieval/infrastructure/retrieval.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -37,6 +37,24 @@ await app.register(documentRoutes, {
 
 // console.log("Query embedding generated");
 // console.log("Dimensions:", embedding.length);
+const embedQuery =
+  createEmbedQueryUseCase();
+
+const vectorSearch =
+  createVectorSearchUseCase();
+
+const embedding =
+  await embedQuery.execute(
+    "backend development",
+  );
+
+const results =
+  await vectorSearch.execute({
+    queryEmbedding: embedding,
+    userId: "cmsq3db0r0000j0ecmzc5lxsv",
+  });
+
+console.log(results);
 
 app.get("/test-queue", async (_request, reply) => {
 
