@@ -1,3 +1,4 @@
+import { ContextBuilder } from "../application/ContextBuilder.js";
 import { EmbedQuery } from "../application/EmbedQuery.js";
 import { VectorSearch } from "../application/VectorSearch.js";
 
@@ -15,4 +16,8 @@ export function createVectorSearchUseCase() {
   return new VectorSearch(
     new PgVectorRepository(),
   );
+}
+
+export function createContextBuilderUseCase() {
+  return new ContextBuilder();
 }
