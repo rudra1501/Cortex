@@ -14,24 +14,30 @@ enum DocumentStatus {
   FAILED
 }
 
-model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  password  String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+enum MessageRole {
+  USER
+  ASSISTANT
+}
 
-  documents Document[]
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents    Document[]
+  chatSessions ChatSession[]
 }
 
 model Document {
-  id          String           @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
   description String?
-  status      DocumentStatus   @default(PENDING)
+  status      DocumentStatus @default(PENDING)
 
   userId String
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   storagePath         String?
   mimeType            String
@@ -47,19 +53,49 @@ model Document {
 }
 
 model Chunk {
-  id               String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  documentId       String
-  document         Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
-  chunkIndex       Int
-  content          String
+  chunkIndex Int
+  content    String
 
-  embedding        Unsupported("vector(3072)")?
+  embedding Unsupported("vector(3072)")?
 
-  tokenCount       Int
+  tokenCount Int
 
   chunkingStrategy String
 
-  createdAt        DateTime @default(now())
+  createdAt DateTime @default(now())
+}
+
+model ChatSession {
+  id String @id @default(cuid())
+
+  title String?
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  messages ChatMessage[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model ChatMessage {
+  id String @id @default(cuid())
+
+  sessionId String
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  role MessageRole
+
+  content String
+
+  createdAt DateTime @default(now())
 }
