@@ -5,13 +5,14 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
+import { createGenerateAnswerUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 // import {
   //   createContextBuilderUseCase,
   //   createEmbedQueryUseCase,
   //   createVectorSearchUseCase,
   // } from "./modules/retrieval/infrastructure/retrieval.factory.js";
   // import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
-  import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
+  // import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -70,15 +71,28 @@ await app.register(documentRoutes, {
 // console.log(prompt);
 
 
-const generateResponse =
-  createGenerateResponseUseCase();
+// const generateResponse =
+//   createGenerateResponseUseCase();
 
-const response =
-  await generateResponse.execute(`
-What is PostgreSQL?
-`);
+// const response =
+//   await generateResponse.execute(`
+// What is PostgreSQL?
+// `);
 
-console.log(response);
+// console.log(response);
+
+// const generateAnswer =
+//   createGenerateAnswerUseCase();
+
+// const response =
+//   await generateAnswer.execute({
+//     question:
+//       "what is backend development?",
+
+//     userId: "cmssy93xe0000j0lsl0xmzpvs",
+//   });
+
+// console.log(response);
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
