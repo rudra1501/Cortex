@@ -6,11 +6,12 @@ import documentRoutes from "./modules/documents/presentation/document.routes.js"
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
 // import {
-//   createContextBuilderUseCase,
-//   createEmbedQueryUseCase,
-//   createVectorSearchUseCase,
-// } from "./modules/retrieval/infrastructure/retrieval.factory.js";
-import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
+  //   createContextBuilderUseCase,
+  //   createEmbedQueryUseCase,
+  //   createVectorSearchUseCase,
+  // } from "./modules/retrieval/infrastructure/retrieval.factory.js";
+  // import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
+  import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -53,20 +54,31 @@ await app.register(documentRoutes, {
 // console.log("Context:");
 // console.log(builtContext.context);
 
-const buildPrompt = createBuildPromptUseCase();
+// const buildPrompt = createBuildPromptUseCase();
 
-const prompt = buildPrompt.execute({
-  question: "What databases do I know?",
-  context: `
-[Source 1]
-Document: Resume
-Chunk: 0
+// const prompt = buildPrompt.execute({
+//   question: "What databases do I know?",
+//   context: `
+// [Source 1]
+// Document: Resume
+// Chunk: 0
 
-Experienced with PostgreSQL and MongoDB.
-`,
-});
+// Experienced with PostgreSQL and MongoDB.
+// `,
+// });
 
-console.log(prompt);
+// console.log(prompt);
+
+
+const generateResponse =
+  createGenerateResponseUseCase();
+
+const response =
+  await generateResponse.execute(`
+What is PostgreSQL?
+`);
+
+console.log(response);
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
