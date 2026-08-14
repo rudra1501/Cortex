@@ -5,11 +5,12 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
-import {
-  createContextBuilderUseCase,
-  createEmbedQueryUseCase,
-  createVectorSearchUseCase,
-} from "./modules/retrieval/infrastructure/retrieval.factory.js";
+// import {
+//   createContextBuilderUseCase,
+//   createEmbedQueryUseCase,
+//   createVectorSearchUseCase,
+// } from "./modules/retrieval/infrastructure/retrieval.factory.js";
+import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
 
 const app = Fastify({
   logger: true,
@@ -32,25 +33,40 @@ await app.register(documentRoutes, {
   prefix: "/documents",
 });
 
-const embedQuery = createEmbedQueryUseCase();
+// const embedQuery = createEmbedQueryUseCase();
 
-const vectorSearch = createVectorSearchUseCase();
+// const vectorSearch = createVectorSearchUseCase();
 
-const contextBuilder = createContextBuilderUseCase();
+// const contextBuilder = createContextBuilderUseCase();
 
-const embedding = await embedQuery.execute("backend development");
+// const embedding = await embedQuery.execute("backend development");
 
-const results = await vectorSearch.execute({
-  queryEmbedding: embedding,
-  userId: "cmsg5bo980000uiqg7m2p5o2y",
+// const results = await vectorSearch.execute({
+//   queryEmbedding: embedding,
+//   userId: "cmsg5bo980000uiqg7m2p5o2y",
+// });
+// const builtContext = contextBuilder.execute(results);
+
+// console.log("Sources:");
+// console.log(builtContext.sources);
+
+// console.log("Context:");
+// console.log(builtContext.context);
+
+const buildPrompt = createBuildPromptUseCase();
+
+const prompt = buildPrompt.execute({
+  question: "What databases do I know?",
+  context: `
+[Source 1]
+Document: Resume
+Chunk: 0
+
+Experienced with PostgreSQL and MongoDB.
+`,
 });
-const builtContext = contextBuilder.execute(results);
 
-console.log("Sources:");
-console.log(builtContext.sources);
-
-console.log("Context:");
-console.log(builtContext.context);
+console.log(prompt);
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
