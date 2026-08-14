@@ -15,7 +15,7 @@ export class VectorSearch {
   async execute({
     queryEmbedding,
     userId,
-    limit = 5,
+    limit = 15,
   }: VectorSearchInput): Promise<RetrievedChunk[]> {
     if (queryEmbedding.length !== 3072) {
       throw new Error(
