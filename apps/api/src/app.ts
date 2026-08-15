@@ -35,52 +35,6 @@ await app.register(documentRoutes, {
   prefix: "/documents",
 });
 
-// const embedQuery = createEmbedQueryUseCase();
-
-// const vectorSearch = createVectorSearchUseCase();
-
-// const contextBuilder = createContextBuilderUseCase();
-
-// const embedding = await embedQuery.execute("backend development");
-
-// const results = await vectorSearch.execute({
-//   queryEmbedding: embedding,
-//   userId: "cmsg5bo980000uiqg7m2p5o2y",
-// });
-// const builtContext = contextBuilder.execute(results);
-
-// console.log("Sources:");
-// console.log(builtContext.sources);
-
-// console.log("Context:");
-// console.log(builtContext.context);
-
-// const buildPrompt = createBuildPromptUseCase();
-
-// const prompt = buildPrompt.execute({
-//   question: "What databases do I know?",
-//   context: `
-// [Source 1]
-// Document: Resume
-// Chunk: 0
-
-// Experienced with PostgreSQL and MongoDB.
-// `,
-// });
-
-// console.log(prompt);
-
-
-// const generateResponse =
-//   createGenerateResponseUseCase();
-
-// const response =
-//   await generateResponse.execute(`
-// What is PostgreSQL?
-// `);
-
-// console.log(response);
-
 // const generateAnswer =
 //   createGenerateAnswerUseCase();
 
