@@ -7,15 +7,11 @@ import { PgVectorRepository } from "./PgVectorRepository.js";
 import { GeminiEmbeddingStrategy } from "./strategies/GeminiEmbeddingStrategy.js";
 
 export function createEmbedQueryUseCase() {
-  return new EmbedQuery(
-    new GeminiEmbeddingStrategy(),
-  );
+  return new EmbedQuery(new GeminiEmbeddingStrategy());
 }
 
 export function createVectorSearchUseCase() {
-  return new VectorSearch(
-    new PgVectorRepository(),
-  );
+  return new VectorSearch(new PgVectorRepository());
 }
 
 export function createContextBuilderUseCase() {

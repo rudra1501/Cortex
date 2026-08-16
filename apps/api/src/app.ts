@@ -7,12 +7,12 @@ import { DocumentQueueService } from "./modules/documents/infrastructure/documen
 import multipart from "@fastify/multipart";
 import { createGenerateAnswerUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 // import {
-  //   createContextBuilderUseCase,
-  //   createEmbedQueryUseCase,
-  //   createVectorSearchUseCase,
-  // } from "./modules/retrieval/infrastructure/retrieval.factory.js";
-  // import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
-  // import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
+//   createContextBuilderUseCase,
+//   createEmbedQueryUseCase,
+//   createVectorSearchUseCase,
+// } from "./modules/retrieval/infrastructure/retrieval.factory.js";
+// import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
+// import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 
 const app = Fastify({
   logger: true,

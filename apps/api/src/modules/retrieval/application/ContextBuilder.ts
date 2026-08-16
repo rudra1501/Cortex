@@ -15,9 +15,7 @@ export type BuiltContext = {
 };
 
 export class ContextBuilder {
-  execute(
-    chunks: RetrievedChunk[],
-  ): BuiltContext {
+  execute(chunks: RetrievedChunk[]): BuiltContext {
     const sources = chunks.map((chunk) => ({
       chunkId: chunk.chunkId,
       documentId: chunk.documentId,
