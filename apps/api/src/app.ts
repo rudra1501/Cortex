@@ -6,6 +6,7 @@ import documentRoutes from "./modules/documents/presentation/document.routes.js"
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
 import { createGenerateAnswerUseCase } from "./modules/chat/infrastructure/chat.factory.js";
+import { GeminiGenerationStrategy } from "./modules/chat/infrastructure/strategies/GeminiGenerationStrategy.js";
 
 const app = Fastify({
   logger: true,
@@ -28,17 +29,26 @@ await app.register(documentRoutes, {
   prefix: "/documents",
 });
 
-const generateAnswer =
-  createGenerateAnswerUseCase();
+// const generateAnswer =
+//   createGenerateAnswerUseCase();
 
-const response =
-  await generateAnswer.execute({
-    question: "What technologies do I know?",
-    userId: "cmsq3db0r0000j0ecmzc5lxsv",
-    sessionId: "cmswzvr6q0001j0vwiclqiqct",
-  });
+// const response =
+//   await generateAnswer.execute({
+//     question: "What technologies do I know?",
+//     userId: "cmsq3db0r0000j0ecmzc5lxsv",
+//     sessionId: "cmswzvr6q0001j0vwiclqiqct",
+//   });
 
-console.log(response);
+// console.log(response);
+
+const strategy =
+  new GeminiGenerationStrategy();
+
+for await (const chunk of strategy.generateStream(
+  "Explain LLMs in simple terms",
+)) {
+  process.stdout.write(chunk);
+}
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
