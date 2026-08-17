@@ -12,6 +12,11 @@ import { GeminiGenerationStrategy } from "./strategies/GeminiGenerationStrategy.
 import { GeminiEmbeddingStrategy } from "../../retrieval/infrastructure/strategies/GeminiEmbeddingStrategy.js";
 
 import { PgVectorRepository } from "../../retrieval/infrastructure/PgVectorRepository.js";
+import { PrismaChatSessionRepository } from "./repositories/PrismaChatSessionRepository.js";
+import { CreateChatSession } from "../application/CreateChatSession.js";
+import { PrismaChatMessageRepository } from "./repositories/PrismaChatMessageRepository.js";
+import { SaveChatMessage } from "../application/SaveChatMessage.js";
+import { GetChatHistory } from "../application/GetChatHistory.js";
 
 export function createGenerateAnswerUseCase() {
   return new GenerateAnswer(
@@ -30,5 +35,23 @@ export function createGenerateAnswerUseCase() {
     new GenerateResponse(
       new GeminiGenerationStrategy(),
     ),
+  );
+}
+
+export function createChatSessionUseCase() {
+  return new CreateChatSession(
+    new PrismaChatSessionRepository(),
+  );
+}
+
+export function createSaveChatMessageUseCase() {
+  return new SaveChatMessage(
+    new PrismaChatMessageRepository(),
+  );
+}
+
+export function createGetChatHistoryUseCase() {
+  return new GetChatHistory(
+    new PrismaChatMessageRepository(),
   );
 }
