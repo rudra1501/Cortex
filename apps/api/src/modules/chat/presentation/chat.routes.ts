@@ -12,4 +12,12 @@ export default async function chatRoutes(
     },
     chatController.ask,
   );
+
+  app.post(
+  "/stream",
+  {
+    preHandler: [app.authenticate],
+  },
+  chatController.stream,
+);
 }

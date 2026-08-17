@@ -1,0 +1,8 @@
+POST http://localhost:3001/chat/stream
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXNxM2RiMHIwMDAwajBlY216YzVseHN2IiwiZW1haWwiOiJ0ZXN0MUB5b3BtYWlsLmNvbSIsImlhdCI6MTc4Njk3NDExOSwiZXhwIjoxNzg2OTc1MDE5fQ.sMU6Z_AzRwfYVoZjjcLmdCo8xmHx5xDqUdRxyx-PVA4
+Content-Type: application/json
+
+{
+    "question": "Explain MongoDb",
+    "sessionId": "cmswzvr6q0001j0vwiclqiqct"
+}
