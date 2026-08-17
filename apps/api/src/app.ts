@@ -5,14 +5,7 @@ import authenticatePlugin from "./plugins/authenticate.js";
 import documentRoutes from "./modules/documents/presentation/document.routes.js";
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
-import { createChatSessionUseCase, createGenerateAnswerUseCase, createGetChatHistoryUseCase, createSaveChatMessageUseCase } from "./modules/chat/infrastructure/chat.factory.js";
-// import {
-//   createContextBuilderUseCase,
-//   createEmbedQueryUseCase,
-//   createVectorSearchUseCase,
-// } from "./modules/retrieval/infrastructure/retrieval.factory.js";
-// import { createBuildPromptUseCase } from "./modules/prompt/infrastructure/prompt.factory.js";
-// import { createGenerateResponseUseCase } from "./modules/chat/infrastructure/chat.factory.js";
+import { createGenerateAnswerUseCase } from "./modules/chat/infrastructure/chat.factory.js";
 
 const app = Fastify({
   logger: true,
