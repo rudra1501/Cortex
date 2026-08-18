@@ -2,8 +2,11 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { askQuestionSchema, streamQuestionSchema } from "./chat.schema.js";
 
-import { createGenerateAnswerUseCase } from "../infrastructure/chat.factory.js";
-import { GeminiGenerationStrategy } from "../infrastructure/strategies/GeminiGenerationStrategy.js";
+import {
+  createChatSessionRepository,
+  createGenerateAnswerUseCase,
+  createGenerateStreamingAnswerUseCase,
+} from "../infrastructure/chat.factory.js";
 
 export const chatController = {
   async ask(request: FastifyRequest, reply: FastifyReply) {
@@ -35,19 +38,37 @@ export const chatController = {
   async stream(request: FastifyRequest, reply: FastifyReply) {
     const body = streamQuestionSchema.parse(request.body);
 
+    const sessionRepository = createChatSessionRepository();
+
+    const session = await sessionRepository.findById(body.sessionId);
+
+    if (!session) {
+      return reply.status(404).send({
+        message: "Chat session not found",
+      });
+    }
+
+    if (session.userId !== request.user.userId) {
+      return reply.status(403).send({
+        message: "Forbidden",
+      });
+    }
+
     reply.raw.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
     });
 
-    const strategy = new GeminiGenerationStrategy();
+    const generateStreamingAnswer = createGenerateStreamingAnswerUseCase();
 
-    for await (const chunk of strategy.generateStream(body.question)) {
+    for await (const chunk of generateStreamingAnswer.execute({
+      question: body.question,
+      userId: request.user.userId,
+      sessionId: body.sessionId,
+    })) {
       reply.raw.write(`data: ${chunk}\n\n`);
     }
-
-    reply.raw.write("data: [DONE]\n\n");
 
     reply.raw.end();
   },
