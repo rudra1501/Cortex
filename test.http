@@ -1,0 +1,8 @@
+POST http://localhost:3001/chat/stream
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXNxM2RiMHIwMDAwajBlY216YzVseHN2IiwiZW1haWwiOiJ0ZXN0MUB5b3BtYWlsLmNvbSIsImlhdCI6MTc4NzA1MTM2NCwiZXhwIjoxNzg3MDUyMjY0fQ.wema6frt0MKyg_mUfOdxJWZRQQW2hk6KgtJjEbqmgeM
+Content-Type: application/json
+
+{
+    "question": "What is my middle name?",
+    "sessionId": "cmswzvr6q0001j0vwiclqiqct"
+}

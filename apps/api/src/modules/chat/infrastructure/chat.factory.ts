@@ -17,6 +17,7 @@ import { CreateChatSession } from "../application/CreateChatSession.js";
 import { PrismaChatMessageRepository } from "./repositories/PrismaChatMessageRepository.js";
 import { SaveChatMessage } from "../application/SaveChatMessage.js";
 import { GetChatHistory } from "../application/GetChatHistory.js";
+import { GenerateStreamingAnswer } from "../application/GenerateStreamingAnswer.js";
 
 export function createGenerateAnswerUseCase() {
   return new GenerateAnswer(
@@ -38,6 +39,7 @@ export function createGenerateAnswerUseCase() {
   );
 }
 
+
 export function createChatSessionUseCase() {
   return new CreateChatSession(
     new PrismaChatSessionRepository(),
@@ -54,4 +56,24 @@ export function createGetChatHistoryUseCase() {
   return new GetChatHistory(
     new PrismaChatMessageRepository(),
   );
+}
+
+export function createGenerateStreamingAnswerUseCase() {
+  return new GenerateStreamingAnswer(
+    new EmbedQuery(
+      new GeminiEmbeddingStrategy(),
+    ),
+    
+    new VectorSearch(
+      new PgVectorRepository(),
+    ),
+    
+    new ContextBuilder(),
+    
+    new BuildPrompt(),
+  );
+}
+
+export function createChatSessionRepository() {
+  return new PrismaChatSessionRepository();
 }
