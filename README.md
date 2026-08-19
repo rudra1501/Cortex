@@ -1,15 +1,13 @@
 # Cortex
 
-Cortex is a Retrieval Engineering project focused on building a production-quality document retrieval pipeline rather than just a chatbot.
+Cortex is a Retrieval Engineering project that focuses on building a production-quality document retrieval pipeline.
 
-The goal of the project is to understand and implement every stage of modern retrieval systems, including document ingestion, chunking, embeddings, vector search, context construction, and response generation.
+The project explores the core components of modern retrieval systems, including document ingestion, embeddings, vector search, context construction, and response generation.
 
-Instead of relying on high-level frameworks, Cortex builds each component incrementally through milestones to better understand how retrieval pipelines work internally.
+Instead of relying on high-level frameworks, each component is implemented incrementally to better understand how retrieval systems work internally.
 
 ```text
 Documents
-    ↓
-Ingestion
     ↓
 Parsing
     ↓
