@@ -6,9 +6,7 @@ type GetDocumentInput = {
 };
 
 export class GetDocument {
-  constructor(
-    private readonly documentRepository: PrismaDocumentRepository,
-  ) {}
+  constructor(private readonly documentRepository: PrismaDocumentRepository) {}
 
   async execute({ id, userId }: GetDocumentInput) {
     const document = await this.documentRepository.findById(id);

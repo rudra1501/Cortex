@@ -6,9 +6,7 @@ type GetDocumentStatusInput = {
 };
 
 export class GetDocumentStatus {
-  constructor(
-    private readonly documentRepository: PrismaDocumentRepository,
-  ) {}
+  constructor(private readonly documentRepository: PrismaDocumentRepository) {}
 
   async execute({ id, userId }: GetDocumentStatusInput) {
     const document = await this.documentRepository.findById(id);

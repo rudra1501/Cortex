@@ -8,16 +8,9 @@ type UpdateDocumentInput = {
 };
 
 export class UpdateDocument {
-  constructor(
-    private readonly documentRepository: PrismaDocumentRepository,
-  ) {}
+  constructor(private readonly documentRepository: PrismaDocumentRepository) {}
 
-  async execute({
-    id,
-    userId,
-    title,
-    description,
-  }: UpdateDocumentInput) {
+  async execute({ id, userId, title, description }: UpdateDocumentInput) {
     const document = await this.documentRepository.findById(id);
 
     if (!document || document.userId !== userId) {
