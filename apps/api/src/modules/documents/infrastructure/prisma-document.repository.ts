@@ -2,26 +2,26 @@ import { prisma } from "../../../config/database.js";
 
 export class PrismaDocumentRepository {
   async create(input: {
-  title: string;
-  description?: string;
-  userId: string;
-  storagePath?: string;
-  mimeType: string;
-}) {
-  return prisma.document.create({
-    data: {
-      title: input.title,
-      ...(input.description !== undefined && {
-        description: input.description,
-      }),
-      ...(input.storagePath !== undefined && {
-        storagePath: input.storagePath,
-      }),
-      mimeType: input.mimeType,
-      userId: input.userId,
-    },
-  });
-}
+    title: string;
+    description?: string;
+    userId: string;
+    storagePath?: string;
+    mimeType: string;
+  }) {
+    return prisma.document.create({
+      data: {
+        title: input.title,
+        ...(input.description !== undefined && {
+          description: input.description,
+        }),
+        ...(input.storagePath !== undefined && {
+          storagePath: input.storagePath,
+        }),
+        mimeType: input.mimeType,
+        userId: input.userId,
+      },
+    });
+  }
 
   async findByUserId(userId: string) {
     return prisma.document.findMany({

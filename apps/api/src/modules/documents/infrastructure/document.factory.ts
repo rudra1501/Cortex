@@ -9,7 +9,6 @@ import { FileStorage } from "./file-storage.js";
 import { DocumentQueueService } from "./document-queue.service.js";
 import { GetDocumentStatus } from "../application/get-document-status.js";
 
-
 export function createUploadDocumentUseCase() {
   return new UploadDocument(
     new FileStorage(),
@@ -19,32 +18,21 @@ export function createUploadDocumentUseCase() {
 }
 
 export function createListDocumentsUseCase() {
-  return new ListDocuments(
-    new PrismaDocumentRepository(),
-  );
+  return new ListDocuments(new PrismaDocumentRepository());
 }
 
 export function createGetDocumentUseCase() {
-  return new GetDocument(
-    new PrismaDocumentRepository(),
-  );
+  return new GetDocument(new PrismaDocumentRepository());
 }
 
 export function createUpdateDocumentUseCase() {
-  return new UpdateDocument(
-    new PrismaDocumentRepository(),
-  );
+  return new UpdateDocument(new PrismaDocumentRepository());
 }
 
 export function createDeleteDocumentUseCase() {
-  return new DeleteDocument(
-    new PrismaDocumentRepository(),
-    new FileStorage(),
-  );
+  return new DeleteDocument(new PrismaDocumentRepository(), new FileStorage());
 }
 
 export function createGetDocumentStatusUseCase() {
-  return new GetDocumentStatus(
-    new PrismaDocumentRepository(),
-  );
+  return new GetDocumentStatus(new PrismaDocumentRepository());
 }

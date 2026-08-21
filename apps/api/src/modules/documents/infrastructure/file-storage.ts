@@ -6,11 +6,7 @@ import { resolve } from "node:path";
 export class FileStorage {
   private readonly uploadDir = process.env.UPLOAD_DIR ?? "uploads";
 
-  async save(file: {
-    filename: string;
-    mimetype: string;
-    buffer: Buffer;
-  }) {
+  async save(file: { filename: string; mimetype: string; buffer: Buffer }) {
     await mkdir(this.uploadDir, { recursive: true });
 
     const extension = file.filename.split(".").pop();
@@ -23,7 +19,7 @@ export class FileStorage {
     return storagePath;
   }
 
-    async delete(storagePath: string) {
+  async delete(storagePath: string) {
     try {
       await unlink(storagePath);
     } catch (error) {
