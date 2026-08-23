@@ -5,9 +5,7 @@ import type { DocumentParser } from "./parser.js";
 const pdfParser = new PdfParser();
 const markdownParser = new MarkdownParser();
 
-export function getParser(
-  mimeType: string,
-): DocumentParser {
+export function getParser(mimeType: string): DocumentParser {
   switch (mimeType) {
     case "application/pdf":
       return pdfParser;
@@ -17,8 +15,6 @@ export function getParser(
       return markdownParser;
 
     default:
-      throw new Error(
-        `Unsupported MIME type: ${mimeType}`,
-      );
+      throw new Error(`Unsupported MIME type: ${mimeType}`);
   }
 }
