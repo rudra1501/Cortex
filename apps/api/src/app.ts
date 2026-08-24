@@ -6,7 +6,7 @@ import documentRoutes from "./modules/documents/presentation/document.routes.js"
 import { DocumentQueueService } from "./modules/documents/infrastructure/document-queue.service.js";
 import multipart from "@fastify/multipart";
 import chatRoutes from "./modules/chat/presentation/chat.routes.js";
-// import { createCreateConfigUseCase, createUpdateConfigUseCase } from "./modules/retrieval-config/infrastructure/retrieval-config.factory.js";
+import retrievalConfigRoutes from "./modules/retrieval-config/presentation/retrieval-config.routes.js";
 
 const app = Fastify({
   logger: true,
@@ -33,31 +33,12 @@ await app.register(chatRoutes, {
   prefix: "/chat",
 });
 
-// const userId = "cmsq3db0r0000j0ecmzc5lxsv";
-// const createConfig =
-//   createCreateConfigUseCase();
-
-// const config =
-//   await createConfig.execute(userId);
-
-// console.log("CREATED CONFIG:");
-// console.log(config);
-
-// const updateConfig =
-//   createUpdateConfigUseCase();
-
-// const updated =
-//   await updateConfig.execute({
-//     id: config.id,
-//     userId,
-//     chunkSize: 500,
-//     chunkOverlap: 100,
-//     topK: 10,
-//     similarityThreshold: 0.65,
-//   });
-
-// console.log("UPDATED CONFIG:");
-// console.log(updated);
+await app.register(
+  retrievalConfigRoutes,
+  {
+    prefix: "/retrieval-config",
+  },
+);
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
