@@ -1,12 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-import {
-  retrievalConfigController,
-} from "./retrieval-config.controller.js";
+import { retrievalConfigController } from "./retrieval-config.controller.js";
 
-export default async function retrievalConfigRoutes(
-  app: FastifyInstance,
-) {
+export default async function retrievalConfigRoutes(app: FastifyInstance) {
   app.post(
     "/",
     {
