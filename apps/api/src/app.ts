@@ -33,12 +33,9 @@ await app.register(chatRoutes, {
   prefix: "/chat",
 });
 
-await app.register(
-  retrievalConfigRoutes,
-  {
-    prefix: "/retrieval-config",
-  },
-);
+await app.register(retrievalConfigRoutes, {
+  prefix: "/retrieval-config",
+});
 
 app.get("/test-queue", async (_request, reply) => {
   const queueService = new DocumentQueueService();
