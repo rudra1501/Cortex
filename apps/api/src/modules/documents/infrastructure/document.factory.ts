@@ -24,6 +24,9 @@ export function createListDocumentsUseCase() {
 export function createGetDocumentUseCase() {
   return new GetDocument(new PrismaDocumentRepository());
 }
+export function createGetDocumentStatusUseCase() {
+  return new GetDocumentStatus(new PrismaDocumentRepository());
+}
 
 export function createUpdateDocumentUseCase() {
   return new UpdateDocument(new PrismaDocumentRepository());
@@ -31,8 +34,4 @@ export function createUpdateDocumentUseCase() {
 
 export function createDeleteDocumentUseCase() {
   return new DeleteDocument(new PrismaDocumentRepository(), new FileStorage());
-}
-
-export function createGetDocumentStatusUseCase() {
-  return new GetDocumentStatus(new PrismaDocumentRepository());
 }

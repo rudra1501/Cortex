@@ -1,5 +1,4 @@
 import { mkdir, writeFile, unlink } from "node:fs/promises";
-import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 
