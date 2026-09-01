@@ -1,6 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
+import type { EmbeddingStrategy } from "./EmbeddingStrategy.js";
 
-export class EmbeddingService {
+export class EmbeddingService
+  implements EmbeddingStrategy
+{
   private readonly client: GoogleGenAI;
 
   constructor() {

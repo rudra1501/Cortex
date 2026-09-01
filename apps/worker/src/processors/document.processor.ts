@@ -34,7 +34,7 @@ export class DocumentProcessor {
       const chunker = new FixedSizeChunker();
 
       const chunks = chunker.chunk(rawText);
-      console.log("chunks:", chunks);
+      // console.log("chunks:", chunks);
       
 
       const savedChunks = await this.chunkRepository.createMany(

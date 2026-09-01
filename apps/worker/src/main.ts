@@ -2,6 +2,22 @@ import Fastify from "fastify";
 import "dotenv/config";
 import "./workers/document.worker.js";
 
+// import type { EmbeddingStrategy } from "./embeddings/EmbeddingStrategy.js";
+// import { EmbeddingService } from "./embeddings/embedding.service.js";
+
+// const strategy: EmbeddingStrategy =
+//   new EmbeddingService();
+
+// const embedding =
+//   await strategy.generateEmbedding(
+//     "Hello world",
+//   );
+
+// console.log(
+//   "Embedding dimensions:",
+//   embedding.length,
+// );
+
 
 const app = Fastify({
   logger: true,
