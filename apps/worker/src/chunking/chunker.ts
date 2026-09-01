@@ -3,7 +3,3 @@ export type Chunk = {
   content: string;
   tokenCount: number;
 };
-
-export interface Chunker {
-  chunk(text: string): Chunk[];
-}
