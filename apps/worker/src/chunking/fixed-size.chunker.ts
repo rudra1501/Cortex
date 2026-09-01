@@ -1,6 +1,7 @@
-import type { Chunk, Chunker } from "./chunker.js";
+import type { Chunk } from "./chunker.js";
+import type { ChunkingStrategy } from "./ChunkingStrategy.js";
 
-export class FixedSizeChunker implements Chunker {
+export class FixedSizeChunker implements ChunkingStrategy {
   constructor(
     private readonly chunkSize = 1000,
     private readonly overlap = 200,

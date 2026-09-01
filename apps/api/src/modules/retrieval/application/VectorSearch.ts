@@ -1,13 +1,12 @@
 import type { RetrievedChunk } from "../infrastructure/PgVectorRepository.js";
 import type { PgVectorRepository } from "../infrastructure/PgVectorRepository.js";
+import type {
+  RetrievalInput,
+  RetrievalStrategy,
+} from "./RetrievalStrategy.js";
 
-type VectorSearchInput = {
-  queryEmbedding: number[];
-  userId: string;
-  limit?: number;
-};
 
-export class VectorSearch {
+export class VectorSearch implements RetrievalStrategy {
   constructor(
     private readonly repository: PgVectorRepository,
   ) {}
@@ -16,7 +15,7 @@ export class VectorSearch {
     queryEmbedding,
     userId,
     limit = 15,
-  }: VectorSearchInput): Promise<RetrievedChunk[]> {
+  }: RetrievalInput): Promise<RetrievedChunk[]> {
     if (queryEmbedding.length !== 3072) {
       throw new Error(
         `Expected 3072 dimensions, received ${queryEmbedding.length}`,
