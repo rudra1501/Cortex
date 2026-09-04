@@ -37,10 +37,27 @@ export const documentController = {
         });
       }
 
+      console.log("Uploaded file:", {
+        filename: file.filename,
+        mimetype: file.mimetype,
+      });
+
+      let mimeType = file.mimetype;
+
+      if (mimeType === "application/octet-stream") {
+        const filename = file.filename.toLowerCase();
+
+        if (filename.endsWith(".pdf")) {
+          mimeType = "application/pdf";
+        } else if (filename.endsWith(".md")) {
+          mimeType = "text/markdown";
+        } else if (filename.endsWith(".txt")) {
+          mimeType = "text/plain";
+        }
+      }
+
       if (
-        !["application/pdf", "text/markdown", "text/plain"].includes(
-          file.mimetype,
-        )
+        !["application/pdf", "text/markdown", "text/plain"].includes(mimeType)
       ) {
         return reply.status(415).send({
           message: "Unsupported file type",
@@ -61,7 +78,7 @@ export const documentController = {
         userId: request.user.userId,
         file: {
           filename: file.filename,
-          mimetype: file.mimetype,
+          mimetype: mimeType,
           buffer,
         },
       });
@@ -195,28 +212,27 @@ export const documentController = {
   },
 
   async status(request: FastifyRequest, reply: FastifyReply) {
-  try {
-    const { id } = request.params as { id: string };
+    try {
+      const { id } = request.params as { id: string };
 
-    const getDocumentStatus =
-      createGetDocumentStatusUseCase();
+      const getDocumentStatus = createGetDocumentStatusUseCase();
 
-    const result = await getDocumentStatus.execute({
-      id,
-      userId: request.user.userId,
-    });
+      const result = await getDocumentStatus.execute({
+        id,
+        userId: request.user.userId,
+      });
 
-    return reply.send(result);
-  } catch (error) {
-    if (error instanceof Error) {
-      return reply.status(404).send({
-        message: error.message,
+      return reply.send(result);
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(404).send({
+          message: error.message,
+        });
+      }
+
+      return reply.status(500).send({
+        message: "Internal Server Error",
       });
     }
-
-    return reply.status(500).send({
-      message: "Internal Server Error",
-    });
-  }
-},
+  },
 };

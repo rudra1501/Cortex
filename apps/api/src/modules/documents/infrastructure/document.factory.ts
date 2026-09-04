@@ -8,12 +8,14 @@ import { PrismaDocumentRepository } from "./prisma-document.repository.js";
 import { FileStorage } from "./file-storage.js";
 import { DocumentQueueService } from "./document-queue.service.js";
 import { GetDocumentStatus } from "../application/get-document-status.js";
+import { PrismaRetrievalConfigRepository } from "../../retrieval-config/infrastructure/prisma-retrieval-config.repository.js";
 
 export function createUploadDocumentUseCase() {
   return new UploadDocument(
     new FileStorage(),
     new PrismaDocumentRepository(),
     new DocumentQueueService(),
+    new PrismaRetrievalConfigRepository(),
   );
 }
 

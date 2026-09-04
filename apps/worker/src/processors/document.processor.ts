@@ -28,14 +28,36 @@ export class DocumentProcessor {
       const buffer = await readFile(document.storagePath!);
 
       const parser = getParser(document.mimeType);
+      console.log("parser document type:", parser);
 
       const rawText = await parser.parse(buffer);
 
-      const chunker = new FixedSizeChunker();
+      const retrievalConfig = document.retrievalConfig;
+
+      if (!retrievalConfig) {
+        throw new Error("Document does not have a retrieval configuration");
+      }
+      console.log("Retrieval config:", {
+        chunkSize: retrievalConfig.chunkSize,
+        chunkOverlap: retrievalConfig.chunkOverlap,
+      });
+
+      const chunker = new FixedSizeChunker(
+        retrievalConfig.chunkSize,
+        retrievalConfig.chunkOverlap,
+      );
 
       const chunks = chunker.chunk(rawText);
-      // console.log("chunks:", chunks);
-      
+      console.log("Chunking config:", {
+        chunkSize: retrievalConfig.chunkSize,
+        chunkOverlap: retrievalConfig.chunkOverlap,
+        totalChunks: chunks.length,
+      });
+
+      console.log(
+        "Chunk sizes:",
+        chunks.map((chunk) => chunk.content.length),
+      );
 
       const savedChunks = await this.chunkRepository.createMany(
         document.id,
