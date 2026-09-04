@@ -6,6 +6,9 @@ export class PrismaDocumentRepository {
       where: {
         id,
       },
+      include: {
+        retrievalConfig: true,
+      },
     });
   }
 

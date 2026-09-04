@@ -7,6 +7,7 @@ export class PrismaDocumentRepository {
     userId: string;
     storagePath?: string;
     mimeType: string;
+    retrievalConfigId?: string;
   }) {
     return prisma.document.create({
       data: {
@@ -19,6 +20,9 @@ export class PrismaDocumentRepository {
         }),
         mimeType: input.mimeType,
         userId: input.userId,
+        ...(input.retrievalConfigId !== undefined && {
+          retrievalConfigId: input.retrievalConfigId,
+        }),
       },
     });
   }
