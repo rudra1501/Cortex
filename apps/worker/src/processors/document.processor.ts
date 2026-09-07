@@ -4,12 +4,11 @@ import { PrismaDocumentRepository } from "../infrastructure/prisma-document.repo
 import { getParser } from "../parsers/parser.factory.js";
 import { FixedSizeChunker } from "../chunking/fixed-size.chunker.js";
 import { PrismaChunkRepository } from "../infrastructure/prisma-chunk.repository.js";
-import { EmbeddingService } from "../embeddings/embedding.service.js";
+import { getEmbeddingStrategy } from "../embeddings/embedding.strategy.factory.js";
 
 export class DocumentProcessor {
   private readonly repository = new PrismaDocumentRepository();
   private readonly chunkRepository = new PrismaChunkRepository();
-  private readonly embeddingService = new EmbeddingService();
 
   async process(documentId: string) {
     const document = await this.repository.findById(documentId);
@@ -37,9 +36,14 @@ export class DocumentProcessor {
       if (!retrievalConfig) {
         throw new Error("Document does not have a retrieval configuration");
       }
+
+      const embeddingStrategy = getEmbeddingStrategy(
+        retrievalConfig.embeddingStrategy,
+      );
       console.log("Retrieval config:", {
         chunkSize: retrievalConfig.chunkSize,
         chunkOverlap: retrievalConfig.chunkOverlap,
+        embeddingStrategy: retrievalConfig.embeddingStrategy,
       });
 
       const chunker = new FixedSizeChunker(
@@ -65,7 +69,7 @@ export class DocumentProcessor {
       );
 
       for (const chunk of savedChunks) {
-        const embedding = await this.embeddingService.generateEmbedding(
+        const embedding = await embeddingStrategy.generateEmbedding(
           chunk.content,
         );
 
