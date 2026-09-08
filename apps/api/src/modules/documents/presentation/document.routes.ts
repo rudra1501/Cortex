@@ -50,6 +50,14 @@ const documentRoutes: FastifyPluginAsync = async (app) => {
     },
     documentController.delete,
   );
+
+  app.post(
+    "/:id/reprocess",
+    {
+      preHandler: [app.authenticate],
+    },
+    documentController.reprocess,
+  );
 };
 
 export default documentRoutes;

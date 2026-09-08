@@ -11,6 +11,7 @@ import {
   createListDocumentsUseCase,
   createUpdateDocumentUseCase,
   createGetDocumentStatusUseCase,
+  createReprocessDocumentUseCase,
 } from "../infrastructure/document.factory.js";
 import type { Multipart } from "@fastify/multipart";
 
@@ -223,6 +224,31 @@ export const documentController = {
       });
 
       return reply.send(result);
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(404).send({
+          message: error.message,
+        });
+      }
+
+      return reply.status(500).send({
+        message: "Internal Server Error",
+      });
+    }
+  },
+
+  async reprocess(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string };
+
+      const reprocessDocument = createReprocessDocumentUseCase();
+
+      const result = await reprocessDocument.execute({
+        id,
+        userId: request.user.userId,
+      });
+
+      return reply.status(202).send(result);
     } catch (error) {
       if (error instanceof Error) {
         return reply.status(404).send({
