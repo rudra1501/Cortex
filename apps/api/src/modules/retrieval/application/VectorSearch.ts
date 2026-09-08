@@ -9,13 +9,13 @@ import type {
 export class VectorSearch implements RetrievalStrategy {
   constructor(
     private readonly repository: PgVectorRepository,
-  ) {}
+  ) { }
 
   async execute({
     queryEmbedding,
     userId,
-    limit = 15,
-    similarityThreshold = 0,
+    limit,
+    similarityThreshold,
   }: RetrievalInput): Promise<RetrievedChunk[]> {
     if (queryEmbedding.length !== 3072) {
       throw new Error(
