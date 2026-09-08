@@ -14,6 +14,7 @@ export class PgVectorRepository {
     queryEmbedding: number[],
     userId: string,
     limit: number,
+    similarityThreshold: number = 0,
   ): Promise<RetrievedChunk[]> {
     const vector = `[${queryEmbedding.join(",")}]`;
 
@@ -32,6 +33,7 @@ export class PgVectorRepository {
       WHERE
         d."userId" = ${userId}
         AND c.embedding IS NOT NULL
+        AND 1 - (c.embedding <=> ${vector}::vector) >= ${similarityThreshold}
       ORDER BY
         c.embedding <=> ${vector}::vector
       LIMIT ${limit}

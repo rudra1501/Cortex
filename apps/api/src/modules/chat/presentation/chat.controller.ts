@@ -6,9 +6,26 @@ import {
   createChatSessionRepository,
   createGenerateAnswerUseCase,
   createGenerateStreamingAnswerUseCase,
+  createChatSessionUseCase,
 } from "../infrastructure/chat.factory.js";
 
 export const chatController = {
+  async createSession(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const createSessionUseCase = createChatSessionUseCase();
+      const session = await createSessionUseCase.execute(request.user.userId);
+      return reply.send(session);
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(400).send({
+          message: error.message,
+        });
+      }
+      return reply.status(500).send({
+        message: "Internal Server Error",
+      });
+    }
+  },
   async ask(request: FastifyRequest, reply: FastifyReply) {
     try {
       const body = askQuestionSchema.parse(request.body);

@@ -1,5 +1,4 @@
 import type { EmbedQuery } from "../../retrieval/application/EmbedQuery.js";
-import type { VectorSearch } from "../../retrieval/application/VectorSearch.js";
 import type { ContextBuilder } from "../../retrieval/application/ContextBuilder.js";
 
 import type { BuildPrompt } from "../../prompt/application/BuildPrompt.js";
@@ -7,6 +6,8 @@ import type { BuildPrompt } from "../../prompt/application/BuildPrompt.js";
 import type { GenerateResponse } from "./GenerateResponse.js";
 import { PrismaChatMessageRepository } from "../infrastructure/repositories/PrismaChatMessageRepository.js";
 import { MessageRole } from "@prisma/client";
+import { PrismaRetrievalConfigRepository } from "../../retrieval-config/infrastructure/prisma-retrieval-config.repository.js";
+import { getRetrievalStrategy } from "../../retrieval/infrastructure/strategies/retrieval.strategy.factory.js";
 
 type GenerateAnswerInput = {
   question: string;
@@ -16,10 +17,10 @@ type GenerateAnswerInput = {
 
 export class GenerateAnswer {
   private readonly messageRepository = new PrismaChatMessageRepository();
+  private readonly configRepository = new PrismaRetrievalConfigRepository();
 
   constructor(
     private readonly embedQuery: EmbedQuery,
-    private readonly vectorSearch: VectorSearch,
     private readonly contextBuilder: ContextBuilder,
     private readonly buildPrompt: BuildPrompt,
     private readonly generateResponse: GenerateResponse,
@@ -32,11 +33,20 @@ export class GenerateAnswer {
       content: question,
     });
 
+    let config = await this.configRepository.findByUserId(userId);
+    if (!config) {
+      config = await this.configRepository.create({ userId });
+    }
+
     const embedding = await this.embedQuery.execute(question);
 
-    const chunks = await this.vectorSearch.execute({
+    const retrievalStrategy = getRetrievalStrategy(config.retrievalStrategy);
+
+    const chunks = await retrievalStrategy.execute({
       queryEmbedding: embedding,
       userId,
+      limit: config.topK,
+      similarityThreshold: config.similarityThreshold,
     });
 
     const context = this.contextBuilder.execute(chunks);
