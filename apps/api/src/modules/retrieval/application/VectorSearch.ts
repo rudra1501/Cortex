@@ -15,6 +15,7 @@ export class VectorSearch implements RetrievalStrategy {
     queryEmbedding,
     userId,
     limit = 15,
+    similarityThreshold = 0,
   }: RetrievalInput): Promise<RetrievedChunk[]> {
     if (queryEmbedding.length !== 3072) {
       throw new Error(
@@ -26,6 +27,7 @@ export class VectorSearch implements RetrievalStrategy {
       queryEmbedding,
       userId,
       limit,
+      similarityThreshold,
     );
   }
 }

@@ -14,10 +14,18 @@ export default async function chatRoutes(
   );
 
   app.post(
-  "/stream",
-  {
-    preHandler: [app.authenticate],
-  },
-  chatController.stream,
-);
+    "/sessions",
+    {
+      preHandler: [app.authenticate],
+    },
+    chatController.createSession,
+  );
+
+  app.post(
+    "/stream",
+    {
+      preHandler: [app.authenticate],
+    },
+    chatController.stream,
+  );
 }

@@ -1,8 +1,8 @@
 POST http://localhost:3001/chat/stream
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXNxM2RiMHIwMDAwajBlY216YzVseHN2IiwiZW1haWwiOiJ0ZXN0MUB5b3BtYWlsLmNvbSIsImlhdCI6MTc4NzA1MTM2NCwiZXhwIjoxNzg3MDUyMjY0fQ.wema6frt0MKyg_mUfOdxJWZRQQW2hk6KgtJjEbqmgeM
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXRuMHN6Nm0wMDAwajBvOHVreTE2N3p0IiwiZW1haWwiOiJ0ZXN0M0B5b3BtYWlsLmNvbSIsImlhdCI6MTc4ODg3NTQxMiwiZXhwIjoxNzg4ODc2MzEyfQ.CiytDgUcASwiCH9-R6nmggc8CLDJSHkGlqjb4DOkMnE
 Content-Type: application/json
 
 {
-    "question": "What is my middle name?",
-    "sessionId": "cmswzvr6q0001j0vwiclqiqct"
+    "question": "What technologies do i know?",
+    "sessionId": "cmtspoyox0001j0k8ja9wigdy"
 }

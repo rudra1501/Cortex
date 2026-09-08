@@ -4,6 +4,7 @@ export type RetrievalInput = {
   queryEmbedding: number[];
   userId: string;
   limit?: number;
+  similarityThreshold?: number;
 };
 
 export interface RetrievalStrategy {
