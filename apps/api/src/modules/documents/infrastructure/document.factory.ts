@@ -3,6 +3,7 @@ import { ListDocuments } from "../application/list-document.js";
 import { GetDocument } from "../application/get-document.js";
 import { UpdateDocument } from "../application/update-document.js";
 import { DeleteDocument } from "../application/delete-document.js";
+import { ReprocessDocument } from "../application/reprocess-document.js";
 
 import { PrismaDocumentRepository } from "./prisma-document.repository.js";
 import { FileStorage } from "./file-storage.js";
@@ -36,4 +37,12 @@ export function createUpdateDocumentUseCase() {
 
 export function createDeleteDocumentUseCase() {
   return new DeleteDocument(new PrismaDocumentRepository(), new FileStorage());
+}
+
+export function createReprocessDocumentUseCase() {
+  return new ReprocessDocument(
+    new PrismaDocumentRepository(),
+    new DocumentQueueService(),
+    new PrismaRetrievalConfigRepository(),
+  );
 }
