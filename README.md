@@ -2,9 +2,9 @@
 
 Cortex is a Retrieval Engineering project that focuses on building a production-quality document retrieval pipeline.
 
-The project explores the core components of modern retrieval systems, including document ingestion, embeddings, vector search, context construction, and response generation.
+The project explores the core components of modern RAG systems, including document ingestion, chunking, embeddings, vector search, retrieval configuration, context construction, and response generation.
 
-Instead of relying on high-level frameworks, each component is implemented incrementally to better understand how retrieval systems work internally.
+Instead of relying on high-level frameworks, each component is implemented incrementally to understand how retrieval systems work internally.
 
 ```text
 Documents
@@ -54,19 +54,28 @@ Generation
 - Local file storage
 - Background processing with BullMQ
 - Text extraction
-- Fixed-size chunking
+- Configurable chunking
 - Embedding generation
 - Vector storage with pgvector
 - Document status tracking
+- Document reprocessing(if the chunking strategy is changed)
 
 ### Retrieval
 
 - Query embeddings
-- Vector similarity search
+- Configurable vector search
+- Configurable Top-K
+- Configurable similarity threshold
+- Retrieval strategy abstraction
 - Context construction
 - Prompt building
-- Chat persistence
+
+### Chat
+
+- Chat sessions
+- Persistent chat messages
 - Server-Sent Events (SSE) streaming
+- Source citations
 
 ---
 
@@ -149,7 +158,7 @@ GEMINI_API_KEY=
 
 ✅ M3 — Retrieval Pipeline
 
-⬜ M4 — Hybrid Retrieval & Context Engineering
+✅ M4 — Configurable Retrieval & Context Engineering
 
-⬜ M5 — Evaluation & Retrieval Quality
+🚧 M5 — Hybrid Retrieval & Reranking
 ```
