@@ -3,6 +3,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXRuM
 Content-Type: application/json
 
 {
-    "question": "What technologies do i know?",
+    "question": "What technologies do I know?",
     "sessionId": "cmtspoyox0001j0k8ja9wigdy"
 }
