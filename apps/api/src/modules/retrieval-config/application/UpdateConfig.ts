@@ -12,6 +12,10 @@ type UpdateConfigInput = {
   topK?: number;
 
   similarityThreshold?: number;
+
+  retrievalStrategy?: any;
+
+  embeddingStrategy?: any;
 };
 
 export class UpdateConfig {
@@ -58,6 +62,18 @@ export class UpdateConfig {
           undefined && {
           similarityThreshold:
             input.similarityThreshold,
+        }),
+
+        ...(input.retrievalStrategy !==
+          undefined && {
+          retrievalStrategy:
+            input.retrievalStrategy,
+        }),
+
+        ...(input.embeddingStrategy !==
+          undefined && {
+          embeddingStrategy:
+            input.embeddingStrategy,
         }),
       },
     );

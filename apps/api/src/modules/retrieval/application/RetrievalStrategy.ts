@@ -1,6 +1,7 @@
 import type { RetrievedChunk } from "../infrastructure/PgVectorRepository.js";
 
 export type RetrievalInput = {
+  query: string;
   queryEmbedding: number[];
   userId: string;
   limit: number;

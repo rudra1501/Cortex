@@ -39,4 +39,31 @@ export class PgVectorRepository {
       LIMIT ${limit}
     `;
   }
+
+  async fullTextSearch(
+    query: string,
+    userId: string,
+    limit: number,
+  ): Promise<RetrievedChunk[]> {
+    console.log(`[FTS] Executing full-text search for query: "${query}"`);
+
+    return prisma.$queryRaw<RetrievedChunk[]>`
+      SELECT
+        c.id AS "chunkId",
+        c."documentId" AS "documentId",
+        d.title AS "documentTitle",
+        c."chunkIndex" AS "chunkIndex",
+        c.content,
+        ts_rank(to_tsvector('english', c.content), plainto_tsquery('english', ${query})) AS similarity
+      FROM "Chunk" c
+      INNER JOIN "Document" d
+        ON d.id = c."documentId"
+      WHERE
+        d."userId" = ${userId}
+        AND to_tsvector('english', c.content) @@ plainto_tsquery('english', ${query})
+      ORDER BY
+        similarity DESC
+      LIMIT ${limit}
+    `;
+  }
 }

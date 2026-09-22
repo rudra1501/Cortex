@@ -8,4 +8,8 @@ export const updateConfigSchema = z.object({
   topK: z.number().int().min(1).optional(),
 
   similarityThreshold: z.number().min(0).max(1).optional(),
+
+  retrievalStrategy: z.any().optional(),
+
+  embeddingStrategy: z.any().optional(),
 });

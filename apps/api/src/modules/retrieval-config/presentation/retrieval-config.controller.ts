@@ -76,6 +76,14 @@ export const retrievalConfigController = {
         ...(body.similarityThreshold !== undefined && {
           similarityThreshold: body.similarityThreshold,
         }),
+
+        ...(body.retrievalStrategy !== undefined && {
+          retrievalStrategy: body.retrievalStrategy,
+        }),
+
+        ...(body.embeddingStrategy !== undefined && {
+          embeddingStrategy: body.embeddingStrategy,
+        }),
       });
 
       return reply.send(config);
