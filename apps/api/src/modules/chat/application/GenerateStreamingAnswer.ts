@@ -54,6 +54,7 @@ export class GenerateStreamingAnswer {
 
     const chunks =
       await retrievalStrategy.execute({
+        query: question,
         queryEmbedding: embedding,
         userId,
         limit: config.topK,

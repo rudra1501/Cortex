@@ -43,6 +43,7 @@ export class GenerateAnswer {
     const retrievalStrategy = getRetrievalStrategy(config.retrievalStrategy);
 
     const chunks = await retrievalStrategy.execute({
+      query: question,
       queryEmbedding: embedding,
       userId,
       limit: config.topK,

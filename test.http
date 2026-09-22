@@ -1,8 +1,8 @@
 POST http://localhost:3001/chat/stream
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXRuMHN6Nm0wMDAwajBvOHVreTE2N3p0IiwiZW1haWwiOiJ0ZXN0M0B5b3BtYWlsLmNvbSIsImlhdCI6MTc4ODg4MTY4NSwiZXhwIjoxNzg4ODgyNTg1fQ.XpdpV7lciRcNnRwfd6s2f_4OsvUEdYF2AfLfIRSgdNI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXRuMHN6Nm0wMDAwajBvOHVreTE2N3p0IiwiZW1haWwiOiJ0ZXN0M0B5b3BtYWlsLmNvbSIsImlhdCI6MTc5MDA4NDE3NiwiZXhwIjoxNzkwMDg1MDc2fQ.sgCkEUngvztSonuXUiVLy7ZUPqicb5LNBvVxf_1-Pt8
 Content-Type: application/json
 
 {
-    "question": "What technologies do I know?",
+    "question": "Parul",
     "sessionId": "cmtspoyox0001j0k8ja9wigdy"
 }

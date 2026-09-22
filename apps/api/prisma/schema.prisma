@@ -25,6 +25,7 @@ enum EmbeddingStrategy {
 
 enum RetrievalStrategy {
   VECTOR
+  FTS
 }
 
 model User {

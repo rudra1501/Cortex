@@ -35,6 +35,10 @@ export class PrismaRetrievalConfigRepository {
       topK?: number;
 
       similarityThreshold?: number;
+
+      retrievalStrategy?: any;
+
+      embeddingStrategy?: any;
     },
   ) {
     return prisma.retrievalConfig.update({
