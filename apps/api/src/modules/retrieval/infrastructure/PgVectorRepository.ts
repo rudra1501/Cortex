@@ -45,7 +45,7 @@ export class PgVectorRepository {
     userId: string,
     limit: number,
   ): Promise<RetrievedChunk[]> {
-    console.log(`[FTS] Executing full-text search for query: "${query}"`);
+    console.log(`Executing full-text search for query: "${query}"`);
 
     return prisma.$queryRaw<RetrievedChunk[]>`
       SELECT
