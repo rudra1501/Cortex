@@ -18,6 +18,11 @@ export class PgVectorRepository {
   ): Promise<RetrievedChunk[]> {
     const vector = `[${queryEmbedding.join(",")}]`;
 
+    console.log("[VECTOR] userId:", userId);
+    console.log("[VECTOR] limit:", limit);
+    console.log("[VECTOR] threshold:", similarityThreshold);
+    console.log("[VECTOR] embedding dimensions:", queryEmbedding.length);
+
     return prisma.$queryRaw<RetrievedChunk[]>`
       SELECT
         c.id AS "chunkId",
@@ -45,7 +50,9 @@ export class PgVectorRepository {
     userId: string,
     limit: number,
   ): Promise<RetrievedChunk[]> {
-    console.log(`[FTS]Executing full-text search for query: "${query}"`);
+    console.log("[FTS] query:", query);
+    console.log("[FTS] userId:", userId);
+    console.log("[FTS] limit:", limit);
 
     return prisma.$queryRaw<RetrievedChunk[]>`
       SELECT

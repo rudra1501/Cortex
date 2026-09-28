@@ -1,8 +1,8 @@
 POST http://localhost:3001/chat/stream
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXRuMHN6Nm0wMDAwajBvOHVreTE2N3p0IiwiZW1haWwiOiJ0ZXN0M0B5b3BtYWlsLmNvbSIsImlhdCI6MTc5MDA4NDE3NiwiZXhwIjoxNzkwMDg1MDc2fQ.sgCkEUngvztSonuXUiVLy7ZUPqicb5LNBvVxf_1-Pt8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXNvdDRzOXgwMDAwdWljd3FibDNwcjdlIiwiZW1haWwiOiJ0d29AeW9wbWFpbC5jb20iLCJpYXQiOjE3OTA0ODQ3MTAsImV4cCI6MTc5MDQ4NTYxMH0.rlJm8Flm7-4xwgyD-MZDsGcrJAVtEKuhSVOL-d9HvXY
 Content-Type: application/json
 
 {
-    "question": "Parul",
-    "sessionId": "cmtspoyox0001j0k8ja9wigdy"
+    "question": "What is the communication address?",
+    "sessionId": "cmuj83yu30003uiy0l2953ja9"
 }
