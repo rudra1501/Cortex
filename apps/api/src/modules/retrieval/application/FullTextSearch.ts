@@ -19,10 +19,12 @@ export class FullTextSearch implements RetrievalStrategy {
       throw new Error("Query is required for FullTextSearch");
     }
 
-    return this.repository.fullTextSearch(
+    const results = await this.repository.fullTextSearch(
       query,
       userId,
       limit,
     );
+
+    return results;
   }
 }

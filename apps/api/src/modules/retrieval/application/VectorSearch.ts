@@ -17,17 +17,20 @@ export class VectorSearch implements RetrievalStrategy {
     limit,
     similarityThreshold,
   }: RetrievalInput): Promise<RetrievedChunk[]> {
+
     if (queryEmbedding.length !== 3072) {
       throw new Error(
         `Expected 3072 dimensions, received ${queryEmbedding.length}`,
       );
     }
 
-    return this.repository.search(
+    const results = await this.repository.search(
       queryEmbedding,
       userId,
       limit,
       similarityThreshold,
     );
+
+    return results;
   }
 }

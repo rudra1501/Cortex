@@ -9,7 +9,7 @@ export const updateConfigSchema = z.object({
 
   similarityThreshold: z.number().min(0).max(1).optional(),
 
-  retrievalStrategy: z.any().optional(),
+  retrievalStrategy: z.enum(["VECTOR", "FTS", "HYBRID"]).optional(),
 
-  embeddingStrategy: z.any().optional(),
+  embeddingStrategy: z.enum(["GEMINI"]).optional(),
 });
