@@ -1,8 +1,8 @@
 POST http://localhost:3001/chat/stream
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXNvdDRzOXgwMDAwdWljd3FibDNwcjdlIiwiZW1haWwiOiJ0d29AeW9wbWFpbC5jb20iLCJpYXQiOjE3OTA0ODQ3MTAsImV4cCI6MTc5MDQ4NTYxMH0.rlJm8Flm7-4xwgyD-MZDsGcrJAVtEKuhSVOL-d9HvXY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXY1MWI4ZGIwMDA4ajB2b2hlbmdraDd5IiwiZW1haWwiOiJqYW5lQHlvcG1haWwuY29tIiwiaWF0IjoxNzkxODAxMDMzLCJleHAiOjE3OTE4MDE5MzN9.hpY7asB8CgeOb47cn5-X3s6Sp2B7dJACowiYX58syb0
 Content-Type: application/json
 
 {
-    "question": "What is the communication address?",
-    "sessionId": "cmuj83yu30003uiy0l2953ja9"
+    "question": "What is debugsenseai?",
+    "sessionId": "cmv51h06s000ej0vo89vvqqya"
 }

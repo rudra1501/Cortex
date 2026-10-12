@@ -17,12 +17,6 @@ export class VectorSearch implements RetrievalStrategy {
     limit,
     similarityThreshold,
   }: RetrievalInput): Promise<RetrievedChunk[]> {
-    console.log("[Vector] ===============================");
-    console.log("[Vector] Starting Vector Search");
-    console.log(`[Vector] Embedding dimensions: ${queryEmbedding.length}`);
-    console.log(`[Vector] User ID: ${userId}`);
-    console.log(`[Vector] Limit: ${limit}`);
-    console.log(`[Vector] Similarity threshold: ${similarityThreshold}`);
 
     if (queryEmbedding.length !== 3072) {
       throw new Error(
@@ -36,9 +30,6 @@ export class VectorSearch implements RetrievalStrategy {
       limit,
       similarityThreshold,
     );
-
-    console.log("[VECTOR] results:", results.length);
-    console.log("[VECTOR] result IDs:", results.map(r => r.chunkId));
 
     return results;
   }

@@ -19,22 +19,11 @@ export class FullTextSearch implements RetrievalStrategy {
       throw new Error("Query is required for FullTextSearch");
     }
 
-    console.log("[FTS] ===============================");
-    console.log("[FTS] Starting Full-Text Search");
-    console.log(`[FTS] Query: "${query}"`);
-    console.log(`[FTS] User ID: ${userId}`);
-    console.log(`[FTS] Limit: ${limit}`);
-
     const results = await this.repository.fullTextSearch(
       query,
       userId,
       limit,
     );
-
-    console.log(`[FTS] Search completed`);
-    console.log(`[FTS] Results found: ${results.length}`);
-
-    console.log("[FTS] ===============================");
 
     return results;
   }
