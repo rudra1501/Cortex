@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test": "node --experimental-strip-types --test src/modules/retrieval/application/HybridSearch.test.ts"
   },
   "keywords": [],
   "author": "",
