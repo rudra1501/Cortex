@@ -16,6 +16,27 @@ import { SaveChatMessage } from "../application/SaveChatMessage.js";
 import { GetChatHistory } from "../application/GetChatHistory.js";
 import { GenerateStreamingAnswer } from "../application/GenerateStreamingAnswer.js";
 
+import { GoogleGenAI } from "@google/genai";
+
+import { GeminiReranker } from "../../retrieval/application/GeminiReranker.js";
+import type { Reranker } from "../../retrieval/application/Reranker.js";
+
+/**
+ * Reranking is opt-in per user; without an API key it is simply unavailable
+ * and the pipeline keeps the retrieval order.
+ */
+function createReranker(): Reranker | undefined {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    return undefined;
+  }
+
+  return new GeminiReranker({
+    client: new GoogleGenAI({ apiKey }),
+  });
+}
+
 export function createGenerateAnswerUseCase() {
   return new GenerateAnswer(
     new EmbedQuery(
@@ -29,6 +50,8 @@ export function createGenerateAnswerUseCase() {
     new GenerateResponse(
       new GeminiGenerationStrategy(),
     ),
+
+    createReranker(),
   );
 }
 
@@ -60,6 +83,8 @@ export function createGenerateStreamingAnswerUseCase() {
     new ContextBuilder(),
     
     new BuildPrompt(),
+
+    createReranker(),
   );
 }
 

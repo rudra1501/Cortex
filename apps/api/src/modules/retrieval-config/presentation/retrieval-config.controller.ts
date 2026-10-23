@@ -84,6 +84,14 @@ export const retrievalConfigController = {
         ...(body.embeddingStrategy !== undefined && {
           embeddingStrategy: body.embeddingStrategy,
         }),
+
+        ...(body.enableReranking !== undefined && {
+          enableReranking: body.enableReranking,
+        }),
+
+        ...(body.rerankCandidateK !== undefined && {
+          rerankCandidateK: body.rerankCandidateK,
+        }),
       });
 
       return reply.send(config);

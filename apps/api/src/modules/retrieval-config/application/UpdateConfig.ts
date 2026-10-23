@@ -1,4 +1,4 @@
-import { PrismaRetrievalConfigRepository } from "../infrastructure/prisma-retrieval-config.repository.js";
+import type { PrismaRetrievalConfigRepository } from "../infrastructure/prisma-retrieval-config.repository.js";
 
 type UpdateConfigInput = {
   id: string;
@@ -16,6 +16,10 @@ type UpdateConfigInput = {
   retrievalStrategy?: any;
 
   embeddingStrategy?: any;
+
+  enableReranking?: boolean;
+
+  rerankCandidateK?: number;
 };
 
 export class UpdateConfig {
@@ -37,6 +41,28 @@ export class UpdateConfig {
     ) {
       throw new Error(
         "Configuration not found",
+      );
+    }
+
+    // Validate the state the row will be in *after* this update, not just the
+    // fields present in the request body.
+    const effectiveTopK =
+      input.topK ?? config.topK;
+
+    const effectiveCandidateK =
+      input.rerankCandidateK ??
+      config.rerankCandidateK;
+
+    const effectiveEnableReranking =
+      input.enableReranking ??
+      config.enableReranking;
+
+    if (
+      effectiveEnableReranking &&
+      effectiveCandidateK < effectiveTopK
+    ) {
+      throw new Error(
+        `rerankCandidateK (${effectiveCandidateK}) must be >= topK (${effectiveTopK}) when reranking is enabled`,
       );
     }
 
@@ -75,6 +101,30 @@ export class UpdateConfig {
           embeddingStrategy:
             input.embeddingStrategy,
         }),
+
+        ...(input.enableReranking !==
+          undefined && {
+          enableReranking:
+            input.enableReranking,
+        }),
+
+        ...(input.rerankCandidateK !==
+          undefined && {
+          rerankCandidateK:
+            input.rerankCandidateK,
+        }),
+      },
+
+      // Compare-and-set guard: the values above were validated against these
+      // persisted values, so the write must not land if they changed.
+      {
+        topK: config.topK,
+
+        rerankCandidateK:
+          config.rerankCandidateK,
+
+        enableReranking:
+          config.enableReranking,
       },
     );
   }

@@ -1,5 +1,10 @@
 import type { EmbedQuery } from "../../retrieval/application/EmbedQuery.js";
 import type { ContextBuilder } from "../../retrieval/application/ContextBuilder.js";
+import type { Reranker } from "../../retrieval/application/Reranker.js";
+import {
+  applyReranking,
+  resolveRetrievalLimit,
+} from "../../retrieval/application/RetrievalPipeline.js";
 
 import type { BuildPrompt } from "../../prompt/application/BuildPrompt.js";
 
@@ -24,6 +29,7 @@ export class GenerateAnswer {
     private readonly contextBuilder: ContextBuilder,
     private readonly buildPrompt: BuildPrompt,
     private readonly generateResponse: GenerateResponse,
+    private readonly reranker?: Reranker,
   ) {}
 
   async execute({ question, userId, sessionId }: GenerateAnswerInput) {
@@ -42,15 +48,28 @@ export class GenerateAnswer {
 
     const retrievalStrategy = getRetrievalStrategy(config.retrievalStrategy);
 
+    const retrievalSettings = {
+      enableReranking: config.enableReranking,
+      rerankCandidateK: config.rerankCandidateK,
+      topK: config.topK,
+    };
+
     const chunks = await retrievalStrategy.execute({
       query: question,
       queryEmbedding: embedding,
       userId,
-      limit: config.topK,
+      limit: resolveRetrievalLimit(retrievalSettings),
       similarityThreshold: config.similarityThreshold,
     });
 
-    const context = this.contextBuilder.execute(chunks);
+    const finalChunks = await applyReranking(
+      question,
+      chunks,
+      retrievalSettings,
+      this.reranker,
+    );
+
+    const context = this.contextBuilder.execute(finalChunks);
 
     const prompt = this.buildPrompt.execute({
       question,
