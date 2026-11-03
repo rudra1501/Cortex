@@ -1,3 +1,3 @@
 export interface EmbeddingStrategy {
-  generateEmbedding(text: string): Promise<number[]>;
+  generateEmbedding(text: string, requestId?: string): Promise<number[]>;
 }

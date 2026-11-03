@@ -1,5 +1,6 @@
 import type { RetrievedChunk } from "../infrastructure/PgVectorRepository.js";
 import type { RetrievalInput, RetrievalStrategy } from "./RetrievalStrategy.js";
+import { stageLog, elapsed, isVerboseDebugEnabled } from "../../shared/stageLog.js";
 
 /** Reciprocal Rank Fusion constant. Higher values reduce the impact of rank differences. */
 const RRF_K = 60;
@@ -11,19 +12,26 @@ export class HybridSearch implements RetrievalStrategy {
   ) {}
 
   async execute(input: RetrievalInput): Promise<RetrievedChunk[]> {
-    console.log("[HYBRID] strategy: RRF");
-    console.log("[HYBRID] userId:", input.userId);
-    console.log("[HYBRID] limit (topK):", input.limit);
-    console.log("[HYBRID] RRF_K:", RRF_K);
-    console.log("[HYBRID] similarityThreshold (applied by VectorSearch only):", input.similarityThreshold);
+    const debug = isVerboseDebugEnabled();
 
+    if (debug) {
+      console.log("[HYBRID] strategy: RRF, limit:", input.limit, "threshold:", input.similarityThreshold);
+    }
+
+    const tRetrieval0 = performance.now();
     const [vectorResults, ftsResults] = await Promise.all([
       this.vectorSearch.execute(input),
       this.fullTextSearch.execute(input),
     ]);
+    const combinedDurationMs = elapsed(tRetrieval0);
 
-    console.log("[HYBRID] vector results count:", vectorResults.length);
-    console.log("[HYBRID] FTS results count:", ftsResults.length);
+    stageLog(input.requestId, "retrieval.combined", {
+      durationMs: combinedDurationMs,
+      vectorCount: vectorResults.length,
+      ftsCount: ftsResults.length,
+    });
+
+    const tRrf0 = performance.now();
 
     /** Accumulated RRF scores keyed by chunkId. */
     const rrfScores = new Map<string, number>();
@@ -36,9 +44,11 @@ export class HybridSearch implements RetrievalStrategy {
         const score = 1 / (RRF_K + rank);
         const prev = rrfScores.get(chunk.chunkId) ?? 0;
         rrfScores.set(chunk.chunkId, prev + score);
-        console.log(
-          `[HYBRID] ${label} rank=${rank} chunkId=${chunk.chunkId} +score=${score.toFixed(6)} accumulated=${(prev + score).toFixed(6)}`,
-        );
+        if (debug) {
+          console.log(
+            `[HYBRID] ${label} rank=${rank} chunkId=${chunk.chunkId} +score=${score.toFixed(6)} accumulated=${(prev + score).toFixed(6)}`,
+          );
+        }
         if (!metadata.has(chunk.chunkId)) {
           metadata.set(chunk.chunkId, chunk);
         }
@@ -54,15 +64,17 @@ export class HybridSearch implements RetrievalStrategy {
         scoreB - scoreA || idA.localeCompare(idB),
     );
 
-    console.log("[HYBRID] merged pool (before top-K slice):");
-    sorted.forEach(([chunkId, score], i) => {
-      const inVector = vectorResults.some((c) => c.chunkId === chunkId);
-      const inFts = ftsResults.some((c) => c.chunkId === chunkId);
-      const sources = [inVector && "VECTOR", inFts && "FTS"].filter(Boolean).join("+");
-      console.log(
-        `[HYBRID]   #${i + 1} chunkId=${chunkId} rrfScore=${score.toFixed(6)} sources=[${sources}]`,
-      );
-    });
+    if (debug) {
+      console.log("[HYBRID] merged pool (before top-K slice):");
+      sorted.forEach(([chunkId, score], i) => {
+        const inVector = vectorResults.some((c) => c.chunkId === chunkId);
+        const inFts = ftsResults.some((c) => c.chunkId === chunkId);
+        const sources = [inVector && "VECTOR", inFts && "FTS"].filter(Boolean).join("+");
+        console.log(
+          `[HYBRID]   #${i + 1} chunkId=${chunkId} rrfScore=${score.toFixed(6)} sources=[${sources}]`,
+        );
+      });
+    }
 
     const results = sorted
       .slice(0, input.limit)
@@ -72,12 +84,25 @@ export class HybridSearch implements RetrievalStrategy {
         similarity: score, // RRF score replaces raw cosine/ts_rank value
       }));
 
-    console.log("[HYBRID] final output count:", results.length);
-    results.forEach((chunk, i) => {
-      console.log(
-        `[HYBRID]   output #${i + 1} chunkId=${chunk.chunkId} rrfScore=${chunk.similarity.toFixed(6)} doc="${chunk.documentTitle}"`,
-      );
+    const rrfDurationMs = elapsed(tRrf0);
+
+    stageLog(input.requestId, "retrieval.rrf", {
+      durationMs: rrfDurationMs,
+      poolCount: sorted.length,
+      outputCount: results.length,
     });
+
+    console.log(
+      `[HYBRID] strategy=RRF vectorCount=${vectorResults.length} ftsCount=${ftsResults.length} mergedCount=${results.length}`,
+    );
+
+    if (debug) {
+      results.forEach((chunk, i) => {
+        console.log(
+          `[HYBRID]   output #${i + 1} chunkId=${chunk.chunkId} rrfScore=${chunk.similarity.toFixed(6)}`,
+        );
+      });
+    }
 
     return results;
   }

@@ -1,5 +1,6 @@
 import type { RetrievedChunk } from "../infrastructure/PgVectorRepository.js";
 import type { Reranker } from "./Reranker.js";
+import { stageLog } from "../../shared/stageLog.js";
 
 /** Same model as answer generation — cheapest/fastest available option. */
 export const RERANK_MODEL = "gemini-3.5-flash-lite";
@@ -136,11 +137,17 @@ export class GeminiReranker implements Reranker {
   async rerank(
     query: string,
     candidates: RetrievedChunk[],
+    requestId?: string,
   ): Promise<RetrievedChunk[]> {
     const startedAt = performance.now();
 
     if (candidates.length === 0) {
       console.log("[RERANKER] skipped: 0 candidates");
+      stageLog(requestId, "rerank", {
+        durationMs: 0,
+        candidateCount: 0,
+        status: "skipped",
+      });
 
       return candidates;
     }
@@ -150,18 +157,31 @@ export class GeminiReranker implements Reranker {
     const remainder = candidates.slice(promptCandidates.length);
 
     console.log(
-      `[RERANKER] reranking ${promptCandidates.length}/${candidates.length} candidates for query="${truncate(query, 80)}" (timeout=${this.timeoutMs}ms)`,
+      `[RERANKER] reranking ${promptCandidates.length}/${candidates.length} candidates (timeout=${this.timeoutMs}ms)`,
     );
 
+    const userPrompt = buildUserPrompt(query, promptCandidates, this.maxCharsPerChunk);
+    const approxTokens = Math.ceil(userPrompt.length / 4);
+
     try {
-      const text = await this.requestRanking(query, promptCandidates);
+      const text = await this.requestRanking(query, promptCandidates, userPrompt);
 
       const permutation = parsePermutation(text, promptCandidates.length);
 
       if (!permutation) {
+        const dur = elapsed(startedAt);
         console.log(
-          `[RERANKER] fallback: invalid response — using original order (latency=${elapsed(startedAt)}ms)`,
+          `[RERANKER] fallback: invalid response — using original order (latency=${dur}ms)`,
         );
+
+        stageLog(requestId, "rerank", {
+          durationMs: dur,
+          candidateCount: promptCandidates.length,
+          approxTokens,
+          inputChars: userPrompt.length,
+          status: "fallback",
+          failureType: "invalid_response",
+        });
 
         return candidates;
       }
@@ -174,16 +194,37 @@ export class GeminiReranker implements Reranker {
         );
       }
 
+      const dur = elapsed(startedAt);
       console.log(
-        `[RERANKER] valid permutation, reordered successfully (latency=${elapsed(startedAt)}ms)`,
+        `[RERANKER] valid permutation, reordered successfully (latency=${dur}ms)`,
       );
+
+      stageLog(requestId, "rerank", {
+        durationMs: dur,
+        candidateCount: promptCandidates.length,
+        approxTokens,
+        inputChars: userPrompt.length,
+        status: "success",
+      });
 
       return [...reranked, ...remainder];
     } catch (error) {
+      const dur = elapsed(startedAt);
+      const failure = classifyRerankFailure(error);
       // The cause was already logged by `requestRanking`; keep this line compact.
       console.log(
-        `[RERANKER] fallback: ${formatRerankFailure(classifyRerankFailure(error), { includeDetail: false })} — using original order (latency=${elapsed(startedAt)}ms)`,
+        `[RERANKER] fallback: ${formatRerankFailure(failure, { includeDetail: false })} — using original order (latency=${dur}ms)`,
       );
+
+      stageLog(requestId, "rerank", {
+        durationMs: dur,
+        candidateCount: promptCandidates.length,
+        approxTokens,
+        inputChars: userPrompt.length,
+        status: "fallback",
+        failureType: failure.type,
+        httpStatus: failure.status,
+      });
 
       return candidates;
     }
@@ -192,6 +233,7 @@ export class GeminiReranker implements Reranker {
   private async requestRanking(
     query: string,
     candidates: RetrievedChunk[],
+    userPrompt?: string,
   ): Promise<string | undefined> {
     const controller = new AbortController();
 
@@ -211,7 +253,7 @@ export class GeminiReranker implements Reranker {
     const request = this.client.models.generateContent({
       model: RERANK_MODEL,
 
-      contents: buildUserPrompt(query, candidates, this.maxCharsPerChunk),
+      contents: userPrompt ?? buildUserPrompt(query, candidates, this.maxCharsPerChunk),
 
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

@@ -30,6 +30,7 @@ export async function applyReranking(
   chunks: RetrievedChunk[],
   settings: RetrievalSettings,
   reranker?: Reranker,
+  requestId?: string,
 ): Promise<RetrievedChunk[]> {
   if (!settings.enableReranking) {
     return chunks;
@@ -39,7 +40,7 @@ export async function applyReranking(
 
   if (reranker) {
     try {
-      ordered = await reranker.rerank(query, chunks);
+      ordered = await reranker.rerank(query, chunks, requestId);
     } catch (error) {
       console.log(
         `[RERANKER] fallback: ${error instanceof Error ? error.message : String(error)} — using original order`,

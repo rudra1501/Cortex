@@ -9,5 +9,5 @@ import type { RetrievedChunk } from "../infrastructure/PgVectorRepository.js";
  * - On any failure the original order must be returned unchanged.
  */
 export interface Reranker {
-  rerank(query: string, candidates: RetrievedChunk[]): Promise<RetrievedChunk[]>;
+  rerank(query: string, candidates: RetrievedChunk[], requestId?: string): Promise<RetrievedChunk[]>;
 }
