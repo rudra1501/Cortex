@@ -14,6 +14,7 @@ export class FullTextSearch implements RetrievalStrategy {
     query,
     userId,
     limit,
+    requestId,
   }: RetrievalInput): Promise<RetrievedChunk[]> {
     if (!query) {
       throw new Error("Query is required for FullTextSearch");
@@ -23,6 +24,7 @@ export class FullTextSearch implements RetrievalStrategy {
       query,
       userId,
       limit,
+      requestId,
     );
 
     return results;

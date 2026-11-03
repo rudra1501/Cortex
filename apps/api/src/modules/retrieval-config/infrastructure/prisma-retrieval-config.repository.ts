@@ -39,14 +39,52 @@ export class PrismaRetrievalConfigRepository {
       retrievalStrategy?: any;
 
       embeddingStrategy?: any;
+
+      enableReranking?: boolean;
+
+      rerankCandidateK?: number;
+    },
+    /**
+     * Values read and validated by the caller before this write. When given,
+     * the update only lands if those columns are still unchanged, so a
+     * concurrent update cannot invalidate the cross-field validation. This is
+     * a single-statement compare-and-set — no transaction is required.
+     */
+    expected?: {
+      topK: number;
+
+      rerankCandidateK: number;
+
+      enableReranking: boolean;
     },
   ) {
-    return prisma.retrievalConfig.update({
-      where: {
-        id,
-      },
+    if (!expected) {
+      return prisma.retrievalConfig.update({
+        where: {
+          id,
+        },
 
-      data,
-    });
+        data,
+      });
+    }
+
+    const [updated] =
+      await prisma.retrievalConfig.updateManyAndReturn({
+        where: {
+          id,
+
+          ...expected,
+        },
+
+        data,
+      });
+
+    if (!updated) {
+      throw new Error(
+        "Configuration was modified concurrently, please retry",
+      );
+    }
+
+    return updated;
   }
 }

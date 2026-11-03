@@ -40,5 +40,9 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+
+    // Tests import source modules with the .ts extension required by Node's
+    // type-stripping runner; emit (if ever enabled) rewrites them to .js.
+    "rewriteRelativeImportExtensions": true,
   }
 }

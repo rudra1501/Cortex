@@ -1,4 +1,5 @@
 import { prisma } from "../../../config/database.js";
+import { stageLog, elapsed, isVerboseDebugEnabled } from "../../shared/stageLog.js";
 
 export type RetrievedChunk = {
   chunkId: string;
@@ -15,15 +16,16 @@ export class PgVectorRepository {
     userId: string,
     limit: number,
     similarityThreshold: number = 0,
+    requestId?: string,
   ): Promise<RetrievedChunk[]> {
     const vector = `[${queryEmbedding.join(",")}]`;
+    const t0 = performance.now();
 
-    console.log("[VECTOR] userId:", userId);
-    console.log("[VECTOR] limit:", limit);
-    console.log("[VECTOR] threshold:", similarityThreshold);
-    console.log("[VECTOR] embedding dimensions:", queryEmbedding.length);
+    if (isVerboseDebugEnabled()) {
+      console.log("[VECTOR] limit:", limit, "threshold:", similarityThreshold, "dimensions:", queryEmbedding.length);
+    }
 
-    return prisma.$queryRaw<RetrievedChunk[]>`
+    const results = await prisma.$queryRaw<RetrievedChunk[]>`
       SELECT
         c.id AS "chunkId",
         c."documentId" AS "documentId",
@@ -43,18 +45,29 @@ export class PgVectorRepository {
         c.embedding <=> ${vector}::vector
       LIMIT ${limit}
     `;
+
+    stageLog(requestId, "db.vector", {
+      durationMs: elapsed(t0),
+      resultCount: results.length,
+      limit,
+    });
+
+    return results;
   }
 
   async fullTextSearch(
     query: string,
     userId: string,
     limit: number,
+    requestId?: string,
   ): Promise<RetrievedChunk[]> {
-    console.log("[FTS] query:", query);
-    console.log("[FTS] userId:", userId);
-    console.log("[FTS] limit:", limit);
+    const t0 = performance.now();
 
-    return prisma.$queryRaw<RetrievedChunk[]>`
+    if (isVerboseDebugEnabled()) {
+      console.log("[FTS] limit:", limit);
+    }
+
+    const results = await prisma.$queryRaw<RetrievedChunk[]>`
       SELECT
         c.id AS "chunkId",
         c."documentId" AS "documentId",
@@ -72,5 +85,13 @@ export class PgVectorRepository {
         similarity DESC
       LIMIT ${limit}
     `;
+
+    stageLog(requestId, "db.fts", {
+      durationMs: elapsed(t0),
+      resultCount: results.length,
+      limit,
+    });
+
+    return results;
   }
 }

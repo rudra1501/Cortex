@@ -1,8 +1,8 @@
 POST http://localhost:3001/chat/stream
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXY1MWI4ZGIwMDA4ajB2b2hlbmdraDd5IiwiZW1haWwiOiJqYW5lQHlvcG1haWwuY29tIiwiaWF0IjoxNzkxODA2ODUwLCJleHAiOjE3OTE4MDc3NTB9.d5AEN6FKkqCjwtmayydpupcoTnqgYK0XHnrDmECowfU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjbXY1MWI4ZGIwMDA4ajB2b2hlbmdraDd5IiwiZW1haWwiOiJqYW5lQHlvcG1haWwuY29tIiwiaWF0IjoxNzkyNzU4NjIwLCJleHAiOjE3OTI3NTk1MjB9.aHsYFu9VRhR-ijw9OpqSkyEB7bt3j24ktqCLaevMFi0
 Content-Type: application/json
 
 {
-    "question": "What is debugsenseai?",
+    "question": "What is DebugSenseai?",
     "sessionId": "cmv51h06s000ej0vo89vvqqya"
 }

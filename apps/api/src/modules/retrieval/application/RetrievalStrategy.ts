@@ -6,6 +6,8 @@ export type RetrievalInput = {
   userId: string;
   limit: number;
   similarityThreshold: number;
+  /** Fastify request ID — forwarded to stage logs for request correlation. */
+  requestId?: string | undefined;
 };
 
 export interface RetrievalStrategy {

@@ -132,6 +132,10 @@ model RetrievalConfig {
 
   retrievalStrategy RetrievalStrategy @default(VECTOR)
 
+  enableReranking  Boolean @default(false)
+
+  rerankCandidateK Int     @default(20)
+
   documents Document[]
 
   createdAt DateTime @default(now())

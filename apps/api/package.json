@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "test": "node --experimental-strip-types --test src/modules/retrieval/application/HybridSearch.test.ts"
+    "test": "node --experimental-transform-types --test src/modules/retrieval/application/HybridSearch.test.ts src/modules/retrieval/application/GeminiReranker.test.ts src/modules/retrieval/application/RetrievalPipeline.test.ts src/modules/retrieval-config/application/UpdateConfig.test.ts"
   },
   "keywords": [],
   "author": "",

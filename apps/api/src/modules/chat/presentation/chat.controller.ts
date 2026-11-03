@@ -36,6 +36,7 @@ export const chatController = {
         question: body.question,
         sessionId: body.sessionId,
         userId: request.user.userId,
+        requestId: request.id,
       });
 
       return reply.send(response);
@@ -83,6 +84,7 @@ export const chatController = {
       question: body.question,
       userId: request.user.userId,
       sessionId: body.sessionId,
+      requestId: request.id,
     })) {
       reply.raw.write(`data: ${chunk}\n\n`);
     }
