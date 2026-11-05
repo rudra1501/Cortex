@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "test": "node --experimental-transform-types --test src/modules/retrieval/application/HybridSearch.test.ts src/modules/retrieval/application/GeminiReranker.test.ts src/modules/retrieval/application/RetrievalPipeline.test.ts src/modules/retrieval-config/application/UpdateConfig.test.ts"
+    "test": "tsx --test src/modules/retrieval/application/HybridSearch.test.ts src/modules/retrieval/application/GeminiReranker.test.ts src/modules/retrieval/application/RetrievalPipeline.test.ts src/modules/retrieval-config/application/UpdateConfig.test.ts src/modules/evaluation/__tests__/AlignDatasetCli.test.ts src/modules/evaluation/__tests__/CandidateMatcher.test.ts src/modules/evaluation/__tests__/CandidatePoolCache.test.ts src/modules/evaluation/__tests__/EvaluateRetrievalCli.test.ts src/modules/evaluation/__tests__/EvaluationDataset.test.ts src/modules/evaluation/__tests__/EvaluationRunner.test.ts src/modules/evaluation/__tests__/JsonEvaluationReporter.test.ts src/modules/evaluation/__tests__/MarkdownReporter.test.ts src/modules/evaluation/__tests__/MetricCalculator.test.ts src/modules/evaluation/__tests__/SampleDataset.test.ts",
+    "eval:retrieval": "tsx src/modules/evaluation/cli/evaluate-retrieval.ts",
+    "eval:align": "tsx src/modules/evaluation/cli/align-dataset.ts"
   },
   "keywords": [],
   "author": "",

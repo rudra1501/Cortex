@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Unit tests for HybridSearch – Reciprocal Rank Fusion.
  *
  * Runner: Node.js v22+ built-in test runner (node:test + node:assert).
@@ -9,6 +9,8 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
+
+import { HybridSearch } from "./HybridSearch.js";
 
 // ---------------------------------------------------------------------------
 // Minimal local types — mirror PgVectorRepository.ts / RetrievalStrategy.ts
@@ -36,55 +38,9 @@ type RetrievalStrategy = {
 };
 
 // ---------------------------------------------------------------------------
-// Inline RRF implementation — identical to HybridSearch.ts but written
-// without TypeScript-only constructor parameter properties so
-// --experimental-strip-types can parse it in strip-only mode.
+// Expected RRF fusion constant matching production HybridSearch
 // ---------------------------------------------------------------------------
 const RRF_K = 60;
-
-class HybridSearch {
-  vectorSearch: RetrievalStrategy;
-  fullTextSearch: RetrievalStrategy;
-
-  constructor(vectorSearch: RetrievalStrategy, fullTextSearch: RetrievalStrategy) {
-    this.vectorSearch = vectorSearch;
-    this.fullTextSearch = fullTextSearch;
-  }
-
-  async execute(input: RetrievalInput): Promise<RetrievedChunk[]> {
-    const [vectorResults, ftsResults] = await Promise.all([
-      this.vectorSearch.execute(input),
-      this.fullTextSearch.execute(input),
-    ]);
-
-    const rrfScores = new Map<string, number>();
-    const metadata = new Map<string, RetrievedChunk>();
-
-    const accumulate = (list: RetrievedChunk[]): void => {
-      list.forEach((chunk, index) => {
-        const rank = index + 1;
-        const score = 1 / (RRF_K + rank);
-        rrfScores.set(chunk.chunkId, (rrfScores.get(chunk.chunkId) ?? 0) + score);
-        if (!metadata.has(chunk.chunkId)) {
-          metadata.set(chunk.chunkId, chunk);
-        }
-      });
-    };
-
-    accumulate(vectorResults);
-    accumulate(ftsResults);
-
-    return [...rrfScores.entries()]
-      .sort(([idA, scoreA], [idB, scoreB]) =>
-        scoreB - scoreA || idA.localeCompare(idB),
-      )
-      .slice(0, input.limit)
-      .map(([chunkId, score]) => ({
-        ...metadata.get(chunkId)!,
-        similarity: score,
-      }));
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Helpers

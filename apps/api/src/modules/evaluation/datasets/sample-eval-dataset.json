@@ -1,0 +1,196 @@
+{
+  "version": "1.0.0-sample",
+  "description": "ILLUSTRATIVE SAMPLE BENCHMARK DATASET — Contains synthetic sample queries and explicitly labelled placeholder IDs (doc_placeholder_*, chunk_placeholder_*). This dataset illustrates schema structure and offline evaluation mechanics. For production IR benchmarking and release gating, use verified ground-truth datasets derived from human review.",
+  "createdAt": "2026-11-04T12:00:00.000Z",
+  "queries": [
+    {
+      "id": "q_sample_rrf_k",
+      "question": "What is the Reciprocal Rank Fusion constant k in Cortex hybrid retrieval?",
+      "expectedAnswer": "In Cortex hybrid retrieval, the reciprocal rank fusion constant is defined as RRF_K = 60.",
+      "category": "hybrid_fusion",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 10,
+        "relevantLabeled": 2
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_rrf_01",
+          "documentId": "doc_placeholder_retrieval_spec",
+          "documentTitle": "Retrieval Pipeline Architecture Spec",
+          "chunkIndex": 2,
+          "relevance": 2,
+          "textAnchor": "const RRF_K = 60; Reciprocal Rank Fusion constant.",
+          "notes": "Verified spec definition: defines the fusion constant RRF_K = 60"
+        },
+        {
+          "chunkId": "chunk_placeholder_hybrid_02",
+          "documentId": "doc_placeholder_retrieval_spec",
+          "documentTitle": "Retrieval Pipeline Architecture Spec",
+          "chunkIndex": 3,
+          "relevance": 1,
+          "textAnchor": "accumulate(vectorResults, 'VECTOR'); accumulate(ftsResults, 'FTS');",
+          "notes": "Partial context: describes how vector and FTS lists are fused"
+        },
+        {
+          "chunkId": "chunk_placeholder_cfg_03",
+          "documentId": "doc_placeholder_config_spec",
+          "documentTitle": "Retrieval Configuration & Threshold Defaults",
+          "chunkIndex": 0,
+          "relevance": 0,
+          "textAnchor": "export const similarityThreshold = 0.3;",
+          "notes": "Explicit relevance 0: threshold setting is irrelevant to RRF fusion constant"
+        }
+      ]
+    },
+    {
+      "id": "q_sample_sim_threshold",
+      "question": "What is the default similarity threshold for vector retrieval?",
+      "expectedAnswer": "The default similarity threshold in Cortex is 0.3, read from user configuration or fallback.",
+      "category": "thresholding",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 8,
+        "relevantLabeled": 1
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_cfg_03",
+          "documentId": "doc_placeholder_config_spec",
+          "documentTitle": "Retrieval Configuration & Threshold Defaults",
+          "chunkIndex": 0,
+          "relevance": 2,
+          "textAnchor": "export const similarityThreshold = 0.3;",
+          "notes": "Defines active default threshold of 0.3"
+        },
+        {
+          "chunkId": "chunk_placeholder_rrf_01",
+          "documentId": "doc_placeholder_retrieval_spec",
+          "documentTitle": "Retrieval Pipeline Architecture Spec",
+          "chunkIndex": 2,
+          "relevance": 0,
+          "textAnchor": "const RRF_K = 60; Reciprocal Rank Fusion constant.",
+          "notes": "Explicit relevance 0: RRF constant is irrelevant to similarity threshold"
+        }
+      ]
+    },
+    {
+      "id": "q_sample_rerank_timeout",
+      "question": "What is the hard upper bound timeout for Gemini reranker requests?",
+      "expectedAnswer": "Gemini reranker calls enforce a hard timeout upper bound of RERANK_TIMEOUT_MS = 12_000 (12 seconds).",
+      "category": "reranker_resilience",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 6,
+        "relevantLabeled": 2
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_timeout_01",
+          "documentId": "doc_placeholder_reranker_spec",
+          "documentTitle": "Gemini Reranker Architecture Spec",
+          "chunkIndex": 1,
+          "relevance": 2,
+          "textAnchor": "export const RERANK_TIMEOUT_MS = 12_000; Hard timeout upper bound.",
+          "notes": "Exact definition of the 12 second hard timeout"
+        },
+        {
+          "chunkId": "chunk_placeholder_fallback_02",
+          "documentId": "doc_placeholder_reranker_spec",
+          "documentTitle": "Gemini Reranker Architecture Spec",
+          "chunkIndex": 4,
+          "relevance": 1,
+          "textAnchor": "fallback: type=timeout — using original order",
+          "notes": "Partial context: describes fallback behavior when timeout occurs"
+        }
+      ]
+    },
+    {
+      "id": "q_sample_pgvector_distance",
+      "question": "Which distance operator is used for cosine distance in PostgreSQL pgvector?",
+      "expectedAnswer": "PostgreSQL pgvector uses the <=> cosine distance operator to calculate vector distances.",
+      "category": "pgvector_indexing",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 5,
+        "relevantLabeled": 1
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_pgvector_01",
+          "documentId": "doc_placeholder_pgvector_spec",
+          "documentTitle": "PgVector Repository Implementation Spec",
+          "chunkIndex": 1,
+          "relevance": 2,
+          "textAnchor": "1 - (c.embedding <=> ${vector}::vector) AS similarity",
+          "notes": "Defines cosine distance operator <=> in Postgres query"
+        }
+      ]
+    },
+    {
+      "id": "q_sample_fts_dictionary",
+      "question": "Which language dictionary does PostgreSQL full-text search use?",
+      "expectedAnswer": "PostgreSQL full-text search uses the 'english' dictionary configuration in to_tsvector.",
+      "category": "full_text_search",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 5,
+        "relevantLabeled": 1
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_fts_01",
+          "documentId": "doc_placeholder_fts_spec",
+          "documentTitle": "Full Text Search Implementation Spec",
+          "chunkIndex": 1,
+          "relevance": 2,
+          "textAnchor": "to_tsvector('english', c.content) @@ plainto_tsquery('english', ${query})",
+          "notes": "Specifies english dictionary configuration in to_tsvector"
+        }
+      ]
+    },
+    {
+      "id": "q_sample_negative_query",
+      "question": "How do I configure Stripe customer subscriptions in billing?",
+      "expectedAnswer": "This topic is unrelated to Cortex retrieval architecture; no relevant passages exist.",
+      "category": "negative_edge_cases",
+      "poolMetadata": {
+        "collectedAt": "2026-11-04T12:00:00.000Z",
+        "expectedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "completedPoolingSources": ["VECTOR", "FTS", "HYBRID"],
+        "uniqueCandidatesReviewed": 5,
+        "relevantLabeled": 0
+      },
+      "judgments": [
+        {
+          "chunkId": "chunk_placeholder_rrf_01",
+          "documentId": "doc_placeholder_retrieval_spec",
+          "documentTitle": "Retrieval Pipeline Architecture Spec",
+          "chunkIndex": 2,
+          "relevance": 0,
+          "textAnchor": "const RRF_K = 60; Reciprocal Rank Fusion constant.",
+          "notes": "Explicit relevance 0: completely unrelated domain"
+        },
+        {
+          "chunkId": "chunk_placeholder_cfg_03",
+          "documentId": "doc_placeholder_config_spec",
+          "documentTitle": "Retrieval Configuration & Threshold Defaults",
+          "chunkIndex": 0,
+          "relevance": 0,
+          "textAnchor": "export const similarityThreshold = 0.3;",
+          "notes": "Explicit relevance 0: completely unrelated domain"
+        }
+      ]
+    }
+  ]
+}

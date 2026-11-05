@@ -40,3 +40,8 @@ prisma/dev.db-journal
 uploads/*
 
 test.http
+
+# Evaluation framework artifacts and caches
+.eval-cache/
+eval-results/
+*.eval.json
