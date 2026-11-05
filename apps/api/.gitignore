@@ -4,3 +4,8 @@ node_modules
 
 /generated/prisma
 /uploads
+
+# Evaluation framework artifacts and caches
+.eval-cache/
+eval-results/
+*.eval.json

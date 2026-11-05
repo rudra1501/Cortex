@@ -120,6 +120,20 @@ export type GeminiRerankerOptions = {
  * or incomplete ranking) falls back to the original retrieval order, so
  * enabling reranking can never fail a request or lose a candidate.
  */
+/**
+ * Structured outcome and telemetry returned by {@link GeminiReranker.rerankWithTelemetry}.
+ */
+export type GeminiRerankResult = {
+  readonly chunks: RetrievedChunk[];
+  readonly telemetry: {
+    readonly latencyMs: number;
+    readonly status: "success" | "fallback" | "skipped";
+    readonly failureType?: RerankFailureType | "invalid_response" | undefined;
+    readonly httpStatus?: number | undefined;
+    readonly approxTokens?: number | undefined;
+  };
+};
+
 export class GeminiReranker implements Reranker {
   private readonly client: RerankModelClient;
   private readonly timeoutMs: number;
@@ -134,11 +148,18 @@ export class GeminiReranker implements Reranker {
       options.maxCharsPerChunk ?? RERANK_MAX_CHARS_PER_CHUNK;
   }
 
-  async rerank(
+  /**
+   * Evaluator-facing method exposing exact outcome telemetry.
+   *
+   * Accurately distinguishes genuine successful rerankings (even when the order
+   * happens to remain unchanged) from fallbacks due to timeout, API error, or
+   * invalid response.
+   */
+  async rerankWithTelemetry(
     query: string,
     candidates: RetrievedChunk[],
     requestId?: string,
-  ): Promise<RetrievedChunk[]> {
+  ): Promise<GeminiRerankResult> {
     const startedAt = performance.now();
 
     if (candidates.length === 0) {
@@ -149,7 +170,14 @@ export class GeminiReranker implements Reranker {
         status: "skipped",
       });
 
-      return candidates;
+      return {
+        chunks: candidates,
+        telemetry: {
+          latencyMs: 0,
+          status: "skipped",
+          approxTokens: 0,
+        },
+      };
     }
 
     // Only the first `maxCandidates` are ranked; the rest keep retrieval order.
@@ -183,7 +211,15 @@ export class GeminiReranker implements Reranker {
           failureType: "invalid_response",
         });
 
-        return candidates;
+        return {
+          chunks: candidates,
+          telemetry: {
+            latencyMs: dur,
+            status: "fallback",
+            failureType: "invalid_response",
+            approxTokens,
+          },
+        };
       }
 
       const reranked = permutation.map((index) => promptCandidates[index]!);
@@ -207,7 +243,14 @@ export class GeminiReranker implements Reranker {
         status: "success",
       });
 
-      return [...reranked, ...remainder];
+      return {
+        chunks: [...reranked, ...remainder],
+        telemetry: {
+          latencyMs: dur,
+          status: "success",
+          approxTokens,
+        },
+      };
     } catch (error) {
       const dur = elapsed(startedAt);
       const failure = classifyRerankFailure(error);
@@ -226,8 +269,26 @@ export class GeminiReranker implements Reranker {
         httpStatus: failure.status,
       });
 
-      return candidates;
+      return {
+        chunks: candidates,
+        telemetry: {
+          latencyMs: dur,
+          status: "fallback",
+          failureType: failure.type,
+          httpStatus: failure.status,
+          approxTokens,
+        },
+      };
     }
+  }
+
+  async rerank(
+    query: string,
+    candidates: RetrievedChunk[],
+    requestId?: string,
+  ): Promise<RetrievedChunk[]> {
+    const result = await this.rerankWithTelemetry(query, candidates, requestId);
+    return result.chunks;
   }
 
   private async requestRanking(
